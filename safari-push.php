@@ -1,6 +1,6 @@
 <?php
 /*
- *	Plugin Name: Safari Push for Wordpress
+ *	Plugin Name: Safari Push Notifications
  *	Plugin URI:
  *	Description: Allows WordPress to publish updates to a push server for Safari browsers
  *	Version: 1.0
@@ -38,8 +38,21 @@ function surrealroad_safaripush_enqueuescripts() {
 
 add_action( 'wp_enqueue_scripts', 'surrealroad_safaripush_enqueuescripts' );
 
+
 // add [safari-push] shortcode
 
 function surrealroad_safaripush_html() {
    return '';
 }
+function surrealroad_safaripush_registerShortcodes(){
+   add_shortcode('safari-push', 'surrealroad_safaripush_registerShortcodes');
+}
+add_action( 'init', 'surrealroad_safaripush_registerShortcodes');
+
+
+// add admin options page
+
+function surrealroad_safaripush_pluginSettings() {
+    add_menu_page('1stWD Slider Settings', '1stWD Slider Settings', 'administrator', 'fwds_settings', 'fwds_display_settings');
+}
+add_action('admin_menu', 'fwds_plugin_settings');
