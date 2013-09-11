@@ -26,16 +26,16 @@ function surrealroad_safaripush_checkPermission() {
 	}
 	else if(pResult.permission === 'denied') {
 	}
-	console.log("Check: " + pResult);
+	//console.log("Check: " + pResult);
 }
 
 function surrealroad_safaripush_requestPermission() {
-	window.safari.pushNotification.requestPermission(SafariPushParams.webServiceURL, SafariPushParams.websitePushID, {"test": "Test"}, function(c) {
+	window.safari.pushNotification.requestPermission(SafariPushParams.webServiceURL, SafariPushParams.websitePushID, {}, function(c) {
 		if(c.permission === 'granted') {
 			SafariPushParams.token = pResult.deviceToken;
 		}
 		else if(c.permission === 'denied') {
 		}
-		console.log("Request: " + c);
+		//console.log("Request: " + c);
 	});
 }

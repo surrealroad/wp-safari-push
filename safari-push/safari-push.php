@@ -1,7 +1,7 @@
 <?php
 /*
  *	Plugin Name: Safari Push Notifications
- *	Plugin URI: https://github.com/surrealroad/Safari-Push-Notifications
+ *	Plugin URI: https://github.com/surrealroad/wp-safari-push
  *	Description: Allows WordPress to publish updates to a push server for Safari browsers
  *	Version: 1.0
  *	Author: Surreal Road Limited
@@ -19,6 +19,7 @@ class SafariPush {
 
 	//Version
 	static $version ='1.0';
+	static $apiversion = 'v1';
 
 	//Options and defaults
 	static $options = array(
@@ -37,14 +38,26 @@ class SafariPush {
 
 	static function install(){
 		update_option("safaripush_version",self::$version);
+		update_option("safaripush_apiversion",self::$apiversion);
 		add_option("safaripush_webserviceurl", "");
 		add_option("safaripush_websitepushid", "");
+		add_option("safaripush_pushendpoint", "/".self::$apiversion."/push");
+		add_option("safaripush_pushtitletag", "title");
+		add_option("safaripush_pushbodytag", "body");
+		add_option("safaripush_pushactiontag", "button");
+		add_option("safaripush_pushactionurlargstag", "urlargs");
 	}
 
 	static function uninstall(){
 		delete_option('safaripush_version');
+		delete_option('safaripush_apiversion');
 		delete_option('safaripush_webserviceurl');
 		delete_option('safaripush_websitepushid');
+		delete_option('safaripush_pushendpoint');
+		delete_option('safaripush_pushtitletag');
+		delete_option('safaripush_pushbodytag');
+		delete_option('safaripush_pushactiontag');
+		delete_option('safaripush_pushactionurlargstag');
 	}
 
 
@@ -59,11 +72,21 @@ class SafariPush {
 	    add_settings_section('default-safaripush', 'Default Settings', array($this, 'initDefaultSettings'), 'safaripush');
 	    add_settings_field('safaripush-web-service-url', 'Web Service URL', array($this, 'webServiceURLInput'), 'safaripush', 'default-safaripush');
 	    add_settings_field('safaripush-website-push-id', 'Website Push ID', array($this, 'websitePushIDInput'), 'safaripush', 'default-safaripush');
+	    add_settings_field('safaripush-push-endpoint', 'Web Service Push Endpoint', array($this, 'pushEndpointInput'), 'safaripush', 'default-safaripush');
+	    add_settings_field('safaripush-title-tag', 'Web Service Push Title Tag', array($this, 'pushTitleTagInput'), 'safaripush', 'default-safaripush');
+	    add_settings_field('safaripush-body-tag', 'Web Service Push Body Tag', array($this, 'pushBodyTagInput'), 'safaripush', 'default-safaripush');
+	    add_settings_field('safaripush-action-tag', 'Web Service Push Action Tag', array($this, 'pushActionTagInput'), 'safaripush', 'default-safaripush');
+	    add_settings_field('safaripush-url-args-tag', 'Web Service Push URL Arguments Tag', array($this, 'pushURLArgsTagInput'), 'safaripush', 'default-safaripush');
     }
 
     function registerSettings() {
 	    register_setting('safaripush', 'safaripush_webserviceurl');
 	    register_setting('safaripush', 'safaripush_websitepushid');
+	    register_setting('safaripush', 'safaripush_pushendpoint');
+	    register_setting('safaripush', 'safaripush_titletag');
+	    register_setting('safaripush', 'safaripush_bodytag');
+	    register_setting('safaripush', 'safaripush_actiontag');
+	    register_setting('safaripush', 'safaripush_urlargstag');
     }
 
 	// Enqueue Javascript
@@ -82,7 +105,8 @@ class SafariPush {
 			'id' => "",
 			'webServiceURL' => get_option('safaripush_webserviceurl'),
 			'websitePushID' => get_option('safaripush_websitepushid'),
-			'userInfo' => ""
+			'userInfo' => "",
+			'apiVersion' => get_option('safaripush_apiversion')
 		);
 		wp_localize_script( 'safaripush', 'SafariPushParams', $params );
 	}
@@ -91,7 +115,7 @@ class SafariPush {
 	// add [safaripush] shortcode
 
 	function renderSafariPushShortcode() {
-	   return '';
+	   return '<div class="safari-push-info"></div>';
 	}
 
 	// add admin options page
@@ -109,6 +133,17 @@ class SafariPush {
             <?php do_settings_sections('safaripush'); ?>
             <?php submit_button(); ?>
         </form>
+        <p><a href="https://developer.apple.com/notifications/safari-push-notifications/">More information on Safari Push Notifications</a></p>
+        <p>Safari Push Notification Plugin for Wordpress by <a href="http://www.surrealroad.com">Surreal Road</a>. <?php echo self::surrealTagline(); ?>.</p>
+        <p>Plugin version <?php echo self::$version; ?></p>
+        <form action="<?php echo get_option('safaripush_webserviceurl').get_option('safaripush_pushendpoint'); ?>" method="POST" ?>
+        Use the button below to send a test notification (note that this will be sent to all currently subscribed recipients!)
+        <input type="hidden" name="<?php echo get_option('safaripush_titletag'); ?>" value="Test notification" />
+        <input type="hidden" name="<?php echo get_option('safaripush_bodytag'); ?>" value="This is a test push notification" />
+        <input type="hidden" name="<?php echo get_option('safaripush_actiontag'); ?>" value="View" />
+        <input type="hidden" name="<?php echo get_option('safaripush_urlargstag'); ?>" value="" />
+        <?php submit_button("Test Push", "small"); ?>
+        </form>
     </div>
     <?php
 	}
@@ -123,6 +158,40 @@ class SafariPush {
     function websitePushIDInput(){
     	self::text_input('safaripush_websitepushid', 'Unique identifier for your Website Push ID, e.g. web.com.mysite');
     }
+    function pushEndpointInput(){
+    	self::text_input('safaripush_pushendpoint', 'Endpoint for your web service to receive new notifications, e.g. /v1/push');
+    }
+    function pushTitleTagInput(){
+    	self::text_input('safaripush_titletag', 'Endpoint tag for push notification title, e.g. title');
+    }
+    function pushBodyTagInput(){
+    	self::text_input('safaripush_bodytag', 'Endpoint tag for push notification body, e.g. body');
+    }
+    function pushActionTagInput(){
+    	self::text_input('safaripush_actiontag', 'Endpoint tag for push notification action button label, e.g. button');
+    }
+    function pushURLArgsTagInput(){
+    	self::text_input('safaripush_urlargstag', 'Endpoint tag for push notification URL arguments, e.g. urlargs');
+    }
+
+    // send notification
+
+    function newPushNotification($serviceURL, $endpoint, $title, $body, $action, $urlargs, $titleTag="title", $bodyTag="body", $actionTag="button", $urlargsTag="urlargs" ) {
+		$params = array($titleTag => $title, $bodyTag => $body, $actionTag => $action, $urlargsTag => $urlargs);
+		$query = http_build_query ($params);
+		$contextData = array (
+        	'method' => 'POST',
+        	'header' => "Connection: close\r\n".
+        	"Content-Length: ".strlen($query)."\r\n",
+        	'content'=> $query );
+        $context = stream_context_create (array ( 'http' => $contextData ));
+        $result =  file_get_contents (
+        	$serviceURL.$endpoint,
+			false,
+			$context);
+    }
+
+    // utility functions
 
 	function checkbox_input($option, $description) {
 	    if (get_option($option)) {
@@ -141,7 +210,8 @@ class SafariPush {
 	      $value = '';
 	    }
 	    ?>
-	<input id='<?php echo $option?>' name='<?php echo $option?>' type='text' value='<?php echo esc_attr( $value ); ?>' /> <?php echo $description ?>
+	<input id='<?php echo $option?>' name='<?php echo $option?>' type='text' value='<?php echo esc_attr( $value ); ?>' />
+	<br/><?php echo $description ?>
 	    <?php
 	}
 	function text_area($option, $description) {
@@ -153,6 +223,11 @@ class SafariPush {
 	    ?>
 	<textarea cols=100 rows=6 id='<?php echo $option?>' name='<?php echo $option?>'><?php echo esc_attr( $value ); ?></textarea><br><?php echo $description ?>
 	    <?php
+	}
+
+	function surrealTagline() {
+		$lines = file(plugins_url( '/surreal.strings' , __FILE__ ), FILE_IGNORE_NEW_LINES);
+		return "Push " . $lines[array_rand($lines)];
 	}
 
 }
