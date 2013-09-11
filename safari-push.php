@@ -31,17 +31,20 @@ class SafariPush {
 		register_uninstall_hook(__FILE__,array( __CLASS__, 'uninstall' ));
 		add_action('init', array( $this, 'init' ));
 		add_action('admin_init', array( $this, 'admin_init' ));
+		add_action('admin_init', array($this,'registerSettings'));
 		add_action('admin_menu', array($this,'pluginSettings'));
 	}
 
 	static function install(){
 		update_option("safaripush_version",self::$version);
-		add_option('safaripush',self::$options);
+		add_option("safaripush_webserviceurl", "");
+		add_option("safaripush_websitepushid", "");
 	}
 
 	static function uninstall(){
 		delete_option('safaripush_version');
-		delete_option('safaripush');
+		delete_option('safaripush_webserviceurl');
+		delete_option('safaripush_websitepushid');
 	}
 
 
@@ -53,11 +56,15 @@ class SafariPush {
 		add_action('init', array($this, 'registerShortcodes'));
 	}
 
-	public function admin_init(){
-	    register_setting('safaripush', 'safaripush', array($this, 'validateOptions'));
+	public function admin_init() {
 	    add_settings_section('default-safaripush', 'Default Settings', array($this, 'initDefaultSettings'), 'safaripush');
 	    add_settings_field('safaripush-web-service-url', 'Web Service URL', array($this, 'webServiceURLInput'), 'safaripush', 'default-safaripush');
 	    add_settings_field('safaripush-website-push-id', 'Website Push ID', array($this, 'websitePushIDInput'), 'safaripush', 'default-safaripush');
+    }
+
+    function registerSettings() {
+	    register_setting('safaripush', 'webServiceURL');
+	    register_setting('safaripush', 'websitePushID');
     }
 
 	// Enqueue Javascript
@@ -76,8 +83,8 @@ class SafariPush {
 		$params = array(
 			'token' => "",
 			'id' => "",
-			'webServiceURL' => $options['web-service-url'],
-			'websitePushID' => $options['website-push-id'],
+			'webServiceURL' => get_option('safaripush_webserviceurl'),
+			'websitePushID' => get_option('safaripush_websitepushid'),
 			'userInfo' => ""
 		);
 		wp_localize_script( 'safaripush', 'SafariPushParams', $params );
@@ -112,51 +119,45 @@ class SafariPush {
     <?php
 	}
 
-	function validateOptions($input) {
-    	return $input;
-    }
     function initDefaultSettings() {
 
     }
 
     function webServiceURLInput(){
-    	self::text_input('web-service-url', 'Base URL to your push web service, e.g. https://mypushservice.com');
+    	self::text_input('safaripush_webserviceurl', 'Base URL to your push web service, e.g. https://mypushservice.com');
     }
     function websitePushIDInput(){
-    	self::text_input('website-push-id', 'Unique identifier for your Website Push ID, e.g. web.com.mysite');
+    	self::text_input('safaripush_websitepushid', 'Unique identifier for your Website Push ID, e.g. web.com.mysite');
     }
 
 	function checkbox_input($option, $description) {
-	    $options = get_option( 'safaripush' );
-	    if (array_key_exists($option, $options) and $options[$option] == 1) {
+	    if (get_option($option)) {
 	      $value = 'checked="checked"';
 	    } else {
 	      $value = '';
 	    }
 	    ?>
-	<input id='safaripush-<?php echo $option?>' name='safaripush[<?php echo $option?>]' type='checkbox' value='1' <?php echo $value?> /> <?php echo $description ?>
+	<input id='<?php echo $option?>' name='<?php echo $option?>' type='checkbox' value='1' <?php echo $value?> /> <?php echo $description ?>
 	    <?php
 	}
 	function text_input($option, $description) {
-	    $options = get_option( 'safaripush' );
-	    if (array_key_exists($option, $options)) {
-	      $value = $options[$option];
+	    if (get_option($option)) {
+	      $value = get_option($option);
 	    } else {
 	      $value = '';
 	    }
 	    ?>
-	<input id='safaripush-<?php echo $option?>' name='safaripush[<?php echo $option?>]' type='text' value='<?php echo esc_attr( $value ); ?>' /> <?php echo $description ?>
+	<input id='<?php echo $option?>' name='<?php echo $option?>' type='text' value='<?php echo esc_attr( $value ); ?>' /> <?php echo $description ?>
 	    <?php
 	}
 	function text_area($option, $description) {
-	    $options = get_option( 'safaripush' );
-	    if (array_key_exists($option, $options)) {
-	      $value = $options[$option];
+	    if (get_option($option)) {
+	      $value = get_option($option);
 	    } else {
 	      $value = '';
 	    }
 	    ?>
-	<textarea cols=100 rows=6 id='safaripush-<?php echo $option?>' name='safaripush[<?php echo $option?>]'><?php echo esc_attr( $value ); ?></textarea><br><?php echo $description ?>
+	<textarea cols=100 rows=6 id='<?php echo $option?>' name='<?php echo $option?>'><?php echo esc_attr( $value ); ?></textarea><br><?php echo $description ?>
 	    <?php
 	}
 
