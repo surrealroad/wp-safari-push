@@ -53,7 +53,6 @@ class SafariPush {
 		load_plugin_textdomain('safaripush', false, basename(dirname(__FILE__)).'/languages');
 
 		add_action('wp_enqueue_scripts', array($this, 'enqueuescripts'));
-		add_action('init', array($this, 'registerShortcodes'));
 	}
 
 	public function admin_init() {
@@ -96,10 +95,6 @@ class SafariPush {
 	function renderSafariPushShortcode() {
 	   return '';
 	}
-	function registerShortcodes(){
-	   add_shortcode('safaripush', array($this, 'renderSafariPushShortcode'));
-	}
-
 
 	// add admin options page
 
@@ -164,3 +159,6 @@ class SafariPush {
 }
 
 $safaripush = new SafariPush();
+
+// shortcodes (must be declared outside of class)
+add_shortcode('safari-push', array('SafariPush', 'renderSafariPushShortcode'));
