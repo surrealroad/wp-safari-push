@@ -34,6 +34,9 @@ class SafariPush {
 		add_action('admin_init', array( $this, 'admin_init' ));
 		add_action('admin_init', array($this,'registerSettings'));
 		add_action('admin_menu', array($this,'pluginSettings'));
+		add_action('new_to_publish', 'notifyPost');
+		add_action('draft_to_publish', 'notifyPost');
+		add_action('pending_to_publish', 'notifyPost');
 	}
 
 	static function install(){
@@ -189,6 +192,22 @@ class SafariPush {
         	$serviceURL.$endpoint,
 			false,
 			$context);
+    }
+
+    function notifyPost($newStatus, $oldStatus, $post) {
+    	$serviceURL = get_option('safaripush_webserviceurl');
+    	$endpoint = get_option('safaripush_pushendpoint');
+    	$title = "New post published";
+    	$body = $post->post_title;
+    	$action = "View";
+    	$url = parse_url( get_permalink( $post->id ) );
+    	$urlargs = $url["path"];
+    	if(isset($url["query"])) $urlargs.="?".$url["query"];
+    	$titleTag = get_option('safaripush_titletag');
+    	$bodyTag = get_option('safaripush_bodytag');
+    	$actionTag = get_option('safaripush_actiontag');
+    	$urlargsTag = get_option('safaripush_urlargstag');
+	    newPushNotification($serviceURL, $endpoint, $title, $body, $action, $urlargs, $titleTag, $bodyTag, $actionTag, $urlargsTag);
     }
 
     // utility functions
