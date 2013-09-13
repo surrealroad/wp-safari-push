@@ -239,7 +239,6 @@ class SafariPush {
 	    	$urlargsTag = get_option('safaripush_urlargstag');
 	    	$authTag = get_option('safaripush_authtag');
 		    self::newPushNotification($serviceURL, $endpoint, $title, $body, $action, $urlargs, $auth, $titleTag, $bodyTag, $actionTag, $urlargsTag, $authTag);
-		    wp_mail("jack@ctrlcmdesc.com", "push", $serviceURL.$endpoint.$title.$body.$action.$urlargs.$auth.$titleTag.$bodyTag.$actionTag.$urlargsTag.$authTag);
 		}
     }
 
