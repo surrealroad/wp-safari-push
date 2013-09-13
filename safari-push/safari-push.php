@@ -9,6 +9,12 @@
  *	License: MIT
 */
 
+/*
+error_reporting(E_ALL);
+ini_set('error_reporting', E_ALL);
+ini_set('display_errors',1);
+*/
+
 // Make sure we don't expose any info if called directly
 if ( !function_exists( 'add_action' ) ) {
 	echo 'Hi there!  I\'m just a plugin, not much I can do when called directly.';
@@ -34,10 +40,7 @@ class SafariPush {
 		add_action('admin_init', array($this, 'admin_init'));
 		add_action('admin_init', array($this,'registerSettings'));
 		add_action('admin_menu', array($this,'pluginSettings'));
-		add_action('admin_footer', 'ajaxSubmitPush');
-		add_action('new_to_publish', 'notifyPost');
-		add_action('draft_to_publish', 'notifyPost');
-		add_action('pending_to_publish', 'notifyPost');
+		add_action('admin_footer', array($this, 'ajaxSubmitPush'));
 	}
 
 	static function install(){
@@ -73,6 +76,7 @@ class SafariPush {
 		load_plugin_textdomain('safaripush', false, basename(dirname(__FILE__)).'/languages');
 
 		add_action('wp_enqueue_scripts', array($this, 'enqueuescripts'));
+		add_action('transition_post_status', array($this, 'notifyPost'), 10, 3);
 	}
 
 	public function admin_init() {
@@ -156,7 +160,7 @@ class SafariPush {
         </tr>
         </tbody></table>
         <input type="hidden" name="<?php echo get_option('safaripush_authtag'); ?>" value="<?php echo get_option('safaripush_authcode'); ?>" />
-        <input type="hidden" name="<?php echo get_option('safaripush_urlargstag'); ?>" value="" />
+        <input type="hidden" name="<?php echo get_option('safaripush_urlargstag'); ?>" value="test" />
         <input type="hidden" name="<?php echo get_option('safaripush_actiontag'); ?>" value="View" />
         <?php submit_button("Push", "small"); ?>
         </form>
@@ -200,27 +204,6 @@ class SafariPush {
     	self::text_input('safaripush_authtag', 'Endpoint tag for push notification authentication, e.g. auth');
     }
 
-    // ajax push submit
-
-	function ajaxSubmitPush() {
-	?>
-	<script type="text/javascript" >
-	jQuery(document).ready(function($) {
-
-		var data = {
-			action: 'my_action',
-			whatever: 1234
-		};
-
-		// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
-		$.post(ajaxurl, data, function(response) {
-			alert('Got this from the server: ' + response);
-		});
-	});
-	</script>
-	<?php
-	}
-
     // send notification
 
     function newPushNotification($serviceURL, $endpoint, $title, $body, $action, $urlargs, $auth, $titleTag="title", $bodyTag="body", $actionTag="button", $urlargsTag="urlargs", $authTag="auth" ) {
@@ -239,21 +222,25 @@ class SafariPush {
     }
 
     function notifyPost($newStatus, $oldStatus, $post) {
-    	$serviceURL = get_option('safaripush_webserviceurl');
-    	$endpoint = get_option('safaripush_pushendpoint');
-    	$auth = get_option('safaripush_authcode');
-    	$title = "New post published";
-    	$body = $post->post_title;
-    	$action = "View";
-    	$url = parse_url( get_permalink( $post->id ) );
-    	$urlargs = $url["path"];
-    	if(isset($url["query"])) $urlargs.="?".$url["query"];
-    	$titleTag = get_option('safaripush_titletag');
-    	$bodyTag = get_option('safaripush_bodytag');
-    	$actionTag = get_option('safaripush_actiontag');
-    	$urlargsTag = get_option('safaripush_urlargstag');
-    	$authTag = get_option('safaripush_authtag');
-	    newPushNotification($serviceURL, $endpoint, $title, $body, $action, $urlargs, $auth, $titleTag, $bodyTag, $actionTag, $urlargsTag);
+    	if($newStatus === 'publish' && get_post_type($post) === 'post') { // only notify new of posts
+    		//wp_mail("jack@ctrlcmdesc.com", "push", $newStatus.$oldStatus.$post);
+	    	$serviceURL = get_option('safaripush_webserviceurl');
+	    	$endpoint = get_option('safaripush_pushendpoint');
+	    	$auth = get_option('safaripush_authcode');
+	    	$title = "New post published";
+	    	$body = $post->post_title;
+	    	$action = "View";
+	    	$url = parse_url( get_permalink( $post->id ) );
+	    	$urlargs = ltrim($url["path"],'/');
+	    	if(isset($url["query"])) $urlargs.="?".$url["query"];
+	    	$titleTag = get_option('safaripush_titletag');
+	    	$bodyTag = get_option('safaripush_bodytag');
+	    	$actionTag = get_option('safaripush_actiontag');
+	    	$urlargsTag = get_option('safaripush_urlargstag');
+	    	$authTag = get_option('safaripush_authtag');
+		    self::newPushNotification($serviceURL, $endpoint, $title, $body, $action, $urlargs, $auth, $titleTag, $bodyTag, $actionTag, $urlargsTag, $authTag);
+		    wp_mail("jack@ctrlcmdesc.com", "push", $serviceURL.$endpoint.$title.$body.$action.$urlargs.$auth.$titleTag.$bodyTag.$actionTag.$urlargsTag.$authTag);
+		}
     }
 
     // utility functions
