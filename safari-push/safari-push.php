@@ -29,11 +29,12 @@ class SafariPush {
 
 	public function __construct() {
 		register_activation_hook(__FILE__,array(__CLASS__, 'install' ));
-		register_uninstall_hook(__FILE__,array( __CLASS__, 'uninstall' ));
-		add_action('init', array( $this, 'init' ));
-		add_action('admin_init', array( $this, 'admin_init' ));
+		register_uninstall_hook(__FILE__,array( __CLASS__, 'uninstall'));
+		add_action('init', array($this, 'init'));
+		add_action('admin_init', array($this, 'admin_init'));
 		add_action('admin_init', array($this,'registerSettings'));
 		add_action('admin_menu', array($this,'pluginSettings'));
+		add_action('admin_footer', 'ajaxSubmitPush');
 		add_action('new_to_publish', 'notifyPost');
 		add_action('draft_to_publish', 'notifyPost');
 		add_action('pending_to_publish', 'notifyPost');
@@ -45,22 +46,25 @@ class SafariPush {
 		add_option("safaripush_webserviceurl", "");
 		add_option("safaripush_websitepushid", "");
 		add_option("safaripush_pushendpoint", "/".self::$apiversion."/push");
-		add_option("safaripush_pushtitletag", "title");
-		add_option("safaripush_pushbodytag", "body");
-		add_option("safaripush_pushactiontag", "button");
-		add_option("safaripush_pushactionurlargstag", "urlargs");
+		add_option("safaripush_authcode", "");
+		add_option("safaripush_titletag", "title");
+		add_option("safaripush_bodytag", "body");
+		add_option("safaripush_actiontag", "button");
+		add_option("safaripush_actionurlargstag", "urlargs");
+		add_option("safaripush_authtag", "");
 	}
 
 	static function uninstall(){
 		delete_option('safaripush_version');
 		delete_option('safaripush_apiversion');
 		delete_option('safaripush_webserviceurl');
+		delete_option('safaripush_authcode');
 		delete_option('safaripush_websitepushid');
 		delete_option('safaripush_pushendpoint');
-		delete_option('safaripush_pushtitletag');
-		delete_option('safaripush_pushbodytag');
-		delete_option('safaripush_pushactiontag');
-		delete_option('safaripush_pushactionurlargstag');
+		delete_option('safaripush_titletag');
+		delete_option('safaripush_bodytag');
+		delete_option('safaripush_actiontag');
+		delete_option('safaripush_actionurlargstag');
 	}
 
 
@@ -72,24 +76,28 @@ class SafariPush {
 	}
 
 	public function admin_init() {
-	    add_settings_section('default-safaripush', 'Default Settings', array($this, 'initDefaultSettings'), 'safaripush');
+	    add_settings_section('default-safaripush', 'Web Service Settings', array($this, 'initDefaultSettings'), 'safaripush');
 	    add_settings_field('safaripush-web-service-url', 'Web Service URL', array($this, 'webServiceURLInput'), 'safaripush', 'default-safaripush');
 	    add_settings_field('safaripush-website-push-id', 'Website Push ID', array($this, 'websitePushIDInput'), 'safaripush', 'default-safaripush');
 	    add_settings_field('safaripush-push-endpoint', 'Web Service Push Endpoint', array($this, 'pushEndpointInput'), 'safaripush', 'default-safaripush');
+   	    add_settings_field('safaripush-auth-code', 'Web Service Authentication Code', array($this, 'webServiceAuthInput'), 'safaripush', 'default-safaripush');
 	    add_settings_field('safaripush-title-tag', 'Web Service Push Title Tag', array($this, 'pushTitleTagInput'), 'safaripush', 'default-safaripush');
 	    add_settings_field('safaripush-body-tag', 'Web Service Push Body Tag', array($this, 'pushBodyTagInput'), 'safaripush', 'default-safaripush');
 	    add_settings_field('safaripush-action-tag', 'Web Service Push Action Tag', array($this, 'pushActionTagInput'), 'safaripush', 'default-safaripush');
 	    add_settings_field('safaripush-url-args-tag', 'Web Service Push URL Arguments Tag', array($this, 'pushURLArgsTagInput'), 'safaripush', 'default-safaripush');
+	    add_settings_field('safaripush-auth-tag', 'Web Service Push Authentication Tag', array($this, 'pushAuthTagInput'), 'safaripush', 'default-safaripush');
     }
 
     function registerSettings() {
 	    register_setting('safaripush', 'safaripush_webserviceurl');
 	    register_setting('safaripush', 'safaripush_websitepushid');
 	    register_setting('safaripush', 'safaripush_pushendpoint');
+	    register_setting('safaripush', 'safaripush_authcode');
 	    register_setting('safaripush', 'safaripush_titletag');
 	    register_setting('safaripush', 'safaripush_bodytag');
 	    register_setting('safaripush', 'safaripush_actiontag');
 	    register_setting('safaripush', 'safaripush_urlargstag');
+	    register_setting('safaripush', 'safaripush_authtag');
     }
 
 	// Enqueue Javascript
@@ -136,17 +144,26 @@ class SafariPush {
             <?php do_settings_sections('safaripush'); ?>
             <?php submit_button(); ?>
         </form>
+        <h2>Send a push notification</h2>
+        <form action="<?php echo get_option('safaripush_webserviceurl').get_option('safaripush_pushendpoint'); ?>" method="POST" ?>
+        Use the form below to send a notification (note that this will be sent to all currently subscribed recipients!)
+        <table class="form-table"><tbody>
+        <tr valign="top"><th scope="row">Notification Title</th>
+        <td><input type="text" name="<?php echo get_option('safaripush_titletag'); ?>" value="" /></td>
+        </tr>
+        <tr valign="top"><th scope="row">Notification Body</th>
+        <td><input type="text" name="<?php echo get_option('safaripush_bodytag'); ?>" value="" /></td>
+        </tr>
+        </tbody></table>
+        <input type="hidden" name="<?php echo get_option('safaripush_authtag'); ?>" value="<?php echo get_option('safaripush_authcode'); ?>" />
+        <input type="hidden" name="<?php echo get_option('safaripush_urlargstag'); ?>" value="" />
+        <input type="hidden" name="<?php echo get_option('safaripush_actiontag'); ?>" value="View" />
+        <?php submit_button("Push", "small"); ?>
+        </form>
+        <hr/>
         <p><a href="https://developer.apple.com/notifications/safari-push-notifications/">More information on Safari Push Notifications</a></p>
         <p>Safari Push Notification Plugin for Wordpress by <a href="http://www.surrealroad.com">Surreal Road</a>. <?php echo self::surrealTagline(); ?>.</p>
         <p>Plugin version <?php echo self::$version; ?></p>
-        <form action="<?php echo get_option('safaripush_webserviceurl').get_option('safaripush_pushendpoint'); ?>" method="POST" ?>
-        Use the button below to send a test notification (note that this will be sent to all currently subscribed recipients!)
-        <input type="hidden" name="<?php echo get_option('safaripush_titletag'); ?>" value="Test notification" />
-        <input type="hidden" name="<?php echo get_option('safaripush_bodytag'); ?>" value="This is a test push notification" />
-        <input type="hidden" name="<?php echo get_option('safaripush_actiontag'); ?>" value="View" />
-        <input type="hidden" name="<?php echo get_option('safaripush_urlargstag'); ?>" value="" />
-        <?php submit_button("Test Push", "small"); ?>
-        </form>
     </div>
     <?php
 	}
@@ -164,6 +181,9 @@ class SafariPush {
     function pushEndpointInput(){
     	self::text_input('safaripush_pushendpoint', 'Endpoint for your web service to receive new notifications, e.g. /v1/push');
     }
+    function webServiceAuthInput(){
+    	self::text_input('safaripush_authcode', 'Authentication code for your web service');
+    }
     function pushTitleTagInput(){
     	self::text_input('safaripush_titletag', 'Endpoint tag for push notification title, e.g. title');
     }
@@ -176,11 +196,35 @@ class SafariPush {
     function pushURLArgsTagInput(){
     	self::text_input('safaripush_urlargstag', 'Endpoint tag for push notification URL arguments, e.g. urlargs');
     }
+    function pushAuthTagInput(){
+    	self::text_input('safaripush_authtag', 'Endpoint tag for push notification authentication, e.g. auth');
+    }
+
+    // ajax push submit
+
+	function ajaxSubmitPush() {
+	?>
+	<script type="text/javascript" >
+	jQuery(document).ready(function($) {
+
+		var data = {
+			action: 'my_action',
+			whatever: 1234
+		};
+
+		// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
+		$.post(ajaxurl, data, function(response) {
+			alert('Got this from the server: ' + response);
+		});
+	});
+	</script>
+	<?php
+	}
 
     // send notification
 
-    function newPushNotification($serviceURL, $endpoint, $title, $body, $action, $urlargs, $titleTag="title", $bodyTag="body", $actionTag="button", $urlargsTag="urlargs" ) {
-		$params = array($titleTag => $title, $bodyTag => $body, $actionTag => $action, $urlargsTag => $urlargs);
+    function newPushNotification($serviceURL, $endpoint, $title, $body, $action, $urlargs, $auth, $titleTag="title", $bodyTag="body", $actionTag="button", $urlargsTag="urlargs", $authTag="auth" ) {
+		$params = array($titleTag => $title, $bodyTag => $body, $actionTag => $action, $urlargsTag => $urlargs, $authTag => $auth);
 		$query = http_build_query ($params);
 		$contextData = array (
         	'method' => 'POST',
@@ -197,6 +241,7 @@ class SafariPush {
     function notifyPost($newStatus, $oldStatus, $post) {
     	$serviceURL = get_option('safaripush_webserviceurl');
     	$endpoint = get_option('safaripush_pushendpoint');
+    	$auth = get_option('safaripush_authcode');
     	$title = "New post published";
     	$body = $post->post_title;
     	$action = "View";
@@ -207,7 +252,8 @@ class SafariPush {
     	$bodyTag = get_option('safaripush_bodytag');
     	$actionTag = get_option('safaripush_actiontag');
     	$urlargsTag = get_option('safaripush_urlargstag');
-	    newPushNotification($serviceURL, $endpoint, $title, $body, $action, $urlargs, $titleTag, $bodyTag, $actionTag, $urlargsTag);
+    	$authTag = get_option('safaripush_authtag');
+	    newPushNotification($serviceURL, $endpoint, $title, $body, $action, $urlargs, $auth, $titleTag, $bodyTag, $actionTag, $urlargsTag);
     }
 
     // utility functions
