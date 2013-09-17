@@ -222,7 +222,7 @@ class SafariPush {
     }
 
     function notifyPost($newStatus, $oldStatus, $post) {
-    	if($newStatus === 'publish' && get_post_type($post) === 'post') { // only notify new of posts
+    	if( 'publish' === $newStatus && 'publish' != $oldStatus && get_post_type($post) === 'post') { // only notify new of posts
     		//wp_mail("jack@ctrlcmdesc.com", "push", $newStatus.$oldStatus.$post);
 	    	$serviceURL = get_option('safaripush_webserviceurl');
 	    	$endpoint = get_option('safaripush_pushendpoint');
