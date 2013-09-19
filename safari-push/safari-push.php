@@ -160,7 +160,7 @@ class SafariPush {
         </tr>
         </tbody></table>
         <input type="hidden" name="<?php echo get_option('safaripush_authtag'); ?>" value="<?php echo get_option('safaripush_authcode'); ?>" />
-        <input type="hidden" name="<?php echo get_option('safaripush_urlargstag'); ?>" value="test" />
+        <input type="hidden" name="<?php echo get_option('safaripush_urlargstag'); ?>" value="" />
         <input type="hidden" name="<?php echo get_option('safaripush_actiontag'); ?>" value="View" />
         <?php submit_button("Push", "small"); ?>
         </form>
