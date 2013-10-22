@@ -55,16 +55,15 @@ function surrealroad_safaripush_requestPermissionCallback(permission) {
 function surrealroad_safaripush_rendershortcode(status) {
 	var html = "";
 	switch(status) {
-		case 'error' : html = '<div class="alert alert-danger"><p>Something went wrong communicating with the push notification server, plesae try again later.</p></div>';
+		case 'error' : html = SafariPushParams.errorMsg;
 			break;
-		case 'unsupported' : html = '<div class="alert alert-warning"><p>To enable or modify push notifications for this site, use Safari 7.0 or newer.</p></div>';
+		case 'unsupported' : html = SafariPushParams.unsupportedMsg;
 			break;
-		case 'default' : html = '<div class="alert alert-info"><p>To enable push notifications for this site, click "Allow" when Safari asks you.</p></div>';
+		case 'granted' : html = SafariPushParams.grantedMsg;
 			break;
-		case 'granted' : html = '<div class="alert alert-success"><p>Push notifications are enabled for this site.</p></div>';
+		case 'denied' : html = SafariPushParams.deniedMsg;
 			break;
-		case 'denied' : html = '<div class="alert alert-warning"><p>You have opted not to receive push notifications from us.</p><button class="btn btn-default btn-small" onClick="surrealroad_safaripush_requestPermission();">Enable push notifications</button></div>';
-			break;
+		default : html = SafariPushParams.defaultMsg;
 	}
 	jQuery(".safari-push-info").html(html);
 }

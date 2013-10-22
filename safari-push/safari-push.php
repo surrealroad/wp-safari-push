@@ -3,7 +3,7 @@
  *	Plugin Name: Safari Push Notifications
  *	Plugin URI: https://github.com/surrealroad/wp-safari-push
  *	Description: Allows WordPress to publish updates to a push server for Safari browsers
- *	Version: 1.0
+ *	Version: 0.5
  *	Author: Surreal Road Limited
  *	Author URI: http://www.surrealroad.com
  *	License: MIT
@@ -24,7 +24,7 @@ if ( !function_exists( 'add_action' ) ) {
 class SafariPush {
 
 	//Version
-	static $version ='1.0';
+	static $version ='0.5';
 	static $apiversion = 'v1';
 
 	//Options and defaults
@@ -55,6 +55,11 @@ class SafariPush {
 		add_option("safaripush_actiontag", "button");
 		add_option("safaripush_actionurlargstag", "urlargs");
 		add_option("safaripush_authtag", "");
+		add_option("safaripush_defaultmsg", '<div class="alert alert-info"><p>To enable push notifications for this site, click "Allow" when Safari asks you.</p></div>');
+		add_option("safaripush_unsupportedmsg", '<div class="alert alert-warning"><p>To enable or modify push notifications for this site, use Safari 7.0 or newer.</p></div>');
+		add_option("safaripush_errormsg", '<div class="alert alert-danger"><p>Something went wrong communicating with the push notification server, please try again later.</p></div>');
+		add_option("safaripush_grantedmsg", '<div class="alert alert-success"><p>Push notifications are enabled for this site.</p></div>');
+		add_option("safaripush_deniedmsg", '<div class="alert alert-warning"><p>You have opted not to receive push notifications from us.</p><button class="btn btn-default btn-small" onClick="surrealroad_safaripush_requestPermission();">Enable push notifications</button></div>');
 	}
 
 	static function uninstall(){
@@ -68,6 +73,11 @@ class SafariPush {
 		delete_option('safaripush_bodytag');
 		delete_option('safaripush_actiontag');
 		delete_option('safaripush_actionurlargstag');
+		delete_option('safaripush_defaultmsg');
+		delete_option('safaripush_unsupportedmsg');
+		delete_option('safaripush_errormsg');
+		delete_option('safaripush_grantedmsg');
+		delete_option('safaripush_deniedmsg');
 	}
 
 
@@ -80,16 +90,23 @@ class SafariPush {
 	}
 
 	public function admin_init() {
-	    add_settings_section('default-safaripush', 'Web Service Settings', array($this, 'initDefaultSettings'), 'safaripush');
-	    add_settings_field('safaripush-web-service-url', 'Web Service URL', array($this, 'webServiceURLInput'), 'safaripush', 'default-safaripush');
-	    add_settings_field('safaripush-website-push-id', 'Website Push ID', array($this, 'websitePushIDInput'), 'safaripush', 'default-safaripush');
-	    add_settings_field('safaripush-push-endpoint', 'Web Service Push Endpoint', array($this, 'pushEndpointInput'), 'safaripush', 'default-safaripush');
-   	    add_settings_field('safaripush-auth-code', 'Web Service Authentication Code', array($this, 'webServiceAuthInput'), 'safaripush', 'default-safaripush');
-	    add_settings_field('safaripush-title-tag', 'Web Service Push Title Tag', array($this, 'pushTitleTagInput'), 'safaripush', 'default-safaripush');
-	    add_settings_field('safaripush-body-tag', 'Web Service Push Body Tag', array($this, 'pushBodyTagInput'), 'safaripush', 'default-safaripush');
-	    add_settings_field('safaripush-action-tag', 'Web Service Push Action Tag', array($this, 'pushActionTagInput'), 'safaripush', 'default-safaripush');
-	    add_settings_field('safaripush-url-args-tag', 'Web Service Push URL Arguments Tag', array($this, 'pushURLArgsTagInput'), 'safaripush', 'default-safaripush');
-	    add_settings_field('safaripush-auth-tag', 'Web Service Push Authentication Tag', array($this, 'pushAuthTagInput'), 'safaripush', 'default-safaripush');
+	    add_settings_section('safaripush-webservice', 'Web Service Settings', array($this, 'initWebServiceSettings'), 'safaripush');
+	    add_settings_field('safaripush-web-service-url', 'Web Service URL', array($this, 'webServiceURLInput'), 'safaripush', 'safaripush-webservice');
+	    add_settings_field('safaripush-website-push-id', 'Website Push ID', array($this, 'websitePushIDInput'), 'safaripush', 'safaripush-webservice');
+	    add_settings_field('safaripush-push-endpoint', 'Web Service Push Endpoint', array($this, 'pushEndpointInput'), 'safaripush', 'safaripush-webservice');
+   	    add_settings_field('safaripush-auth-code', 'Web Service Authentication Code', array($this, 'webServiceAuthInput'), 'safaripush', 'safaripush-webservice');
+	    add_settings_field('safaripush-title-tag', 'Web Service Push Title Tag', array($this, 'pushTitleTagInput'), 'safaripush', 'safaripush-webservice');
+	    add_settings_field('safaripush-body-tag', 'Web Service Push Body Tag', array($this, 'pushBodyTagInput'), 'safaripush', 'safaripush-webservice');
+	    add_settings_field('safaripush-action-tag', 'Web Service Push Action Tag', array($this, 'pushActionTagInput'), 'safaripush', 'safaripush-webservice');
+	    add_settings_field('safaripush-url-args-tag', 'Web Service Push URL Arguments Tag', array($this, 'pushURLArgsTagInput'), 'safaripush', 'safaripush-webservice');
+	    add_settings_field('safaripush-auth-tag', 'Web Service Push Authentication Tag', array($this, 'pushAuthTagInput'), 'safaripush', 'safaripush-webservice');
+
+	    add_settings_section('safaripush-shortcode', 'Shortcode Settings', array($this, 'initShortcodeSettings'), 'safaripush');
+	    add_settings_field('safaripush-shortcode-default-msg', 'Default message', array($this, 'shortcodeDefaultmsgInput'), 'safaripush', 'safaripush-shortcode');
+	    add_settings_field('safaripush-shortcode-unsupported-msg', 'Unsupported system message', array($this, 'shortcodeUnsupportedmsgInput'), 'safaripush', 'safaripush-shortcode');
+	    add_settings_field('safaripush-shortcode-error-msg', 'Error message', array($this, 'shortcodeErrormsgInput'), 'safaripush', 'safaripush-shortcode');
+	    add_settings_field('safaripush-shortcode-granted-msg', 'Permission granted message', array($this, 'shortcodeGrantedmsgInput'), 'safaripush', 'safaripush-shortcode');
+	    add_settings_field('safaripush-shortcode-denied-msg', 'Permission denied message', array($this, 'shortcodeDeniedmsgInput'), 'safaripush', 'safaripush-shortcode');
     }
 
     function registerSettings() {
@@ -102,6 +119,11 @@ class SafariPush {
 	    register_setting('safaripush', 'safaripush_actiontag');
 	    register_setting('safaripush', 'safaripush_urlargstag');
 	    register_setting('safaripush', 'safaripush_authtag');
+	    register_setting('safaripush', 'safaripush_defaultmsg');
+	    register_setting('safaripush', 'safaripush_unsupportedmsg');
+	    register_setting('safaripush', 'safaripush_errormsg');
+	    register_setting('safaripush', 'safaripush_grantedmsg');
+	    register_setting('safaripush', 'safaripush_deniedmsg');
     }
 
 	// Enqueue Javascript
@@ -121,7 +143,12 @@ class SafariPush {
 			'webServiceURL' => get_option('safaripush_webserviceurl'),
 			'websitePushID' => get_option('safaripush_websitepushid'),
 			'userInfo' => "",
-			'apiVersion' => get_option('safaripush_apiversion')
+			'apiVersion' => get_option('safaripush_apiversion'),
+			'defaultMsg' => get_option('safaripush_defaultmsg'),
+			'unsupportedMsg' => get_option('safaripush_unsupportedmsg'),
+			'errorMsg' => get_option('safaripush_errormsg'),
+			'grantedMsg' => get_option('safaripush_grantedmsg'),
+			'deniedMsg' => get_option('safaripush_deniedmsg'),
 		);
 		wp_localize_script( 'safaripush', 'SafariPushParams', $params );
 	}
@@ -172,7 +199,11 @@ class SafariPush {
     <?php
 	}
 
-    function initDefaultSettings() {
+    function initWebServiceSettings() {
+
+    }
+
+    function initShortcodeSettings() {
 
     }
 
@@ -202,6 +233,21 @@ class SafariPush {
     }
     function pushAuthTagInput(){
     	self::text_input('safaripush_authtag', 'Endpoint tag for push notification authentication, e.g. auth');
+    }
+    function shortcodeDefaultmsgInput(){
+    	self::text_area('safaripush_defaultmsg', 'Default HTML to display in Shortcode');
+    }
+    function shortcodeUnsupportedmsgInput(){
+    	self::text_area('safaripush_unsupportedmsg', 'HTML to display in Shortcode on unsupported systems');
+    }
+    function shortcodeErrormsgInput(){
+    	self::text_area('safaripush_errormsg', 'HTML to display in Shortcode in case of error');
+    }
+    function shortcodeGrantedmsgInput(){
+    	self::text_area('safaripush_grantedmsg', 'HTML to display in Shortcode when notifications have been granted');
+    }
+    function shortcodeDeniedmsgInput(){
+    	self::text_area('safaripush_deniedmsg', 'HTML to display in Shortcode when notifications have been denied (use onClick="surrealroad_safaripush_requestPermission();" on a button to allow the user to request permission again)');
     }
 
     // send notification
