@@ -8,7 +8,7 @@ CURRENTDIR=`pwd`
 MAINFILE="safari-push.php" # this should be the name of your main php file in the wordpress plugin
 
 # git config
-GITPATH="$CURRENTDIR/" # this file should be in the base of your git repository
+GITPATH="$CURRENTDIR/safari-push" # this file should be in the base of your git repository
 
 # svn config
 SVNPATH="/tmp/$PLUGINSLUG" # path to a temp SVN repo. No trailing slash required and don't add trunk.
