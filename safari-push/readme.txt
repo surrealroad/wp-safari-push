@@ -1,6 +1,6 @@
 === Safari Push ===
 Tags: safari, push notifications, mac, os x, mavericks
-Stable tag: 0.5.1
+Stable tag: 0.5.2
 Tested up to: 3.6
 
 A Safari Push Plugin for Wordpress
@@ -33,3 +33,14 @@ Sure, go to http://www.controlcommandescape.com/push/ (you'll probably want to o
 TODO:
 - Comply with WordPress security guidelines
 - Better option for test notification
+
+== Changelog ==
+
+= 0.5.2 =
+* Fixed folder structure for automatic downloads
+
+= 0.5.1 =
+* Added readme.
+
+= 0.5 =
+* First WordPress release

@@ -3,7 +3,7 @@
 Plugin Name: Safari Push Notifications
 Plugin URI: https://github.com/surrealroad/wp-safari-push
 Description: Allows WordPress to publish updates to a push server for Safari browsers
-Version: 0.5.1
+Version: 0.5.2
 Author: Surreal Road Limited
 Author URI: http://www.surrealroad.com
 License: MIT
