@@ -1,0 +1,166 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Safari Push\n"
+"POT-Creation-Date: 2013-11-07 13:19+0100\n"
+"PO-Revision-Date: 2013-11-07 13:19+0100\n"
+"Last-Translator: Rémy Perona <remperona@gmail.com>\n"
+"Language-Team: Rémy Perona <remperona@gmail.com>\n"
+"Language: Français\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.7\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-"
+"safari-push\n"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:54
+msgid ""
+"To enable push notifications for this site, click \"Allow\" when Safari asks "
+"you."
+msgstr ""
+"Pour activer les notifications push pour ce site, cliquez sur \"Autoriser\" "
+"quand Safari vous le demande."
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:55
+msgid ""
+"To enable or modify push notifications for this site, use Safari 7.0 or "
+"newer."
+msgstr ""
+"Pour activer ou modifier les notifications push pour ce site, utilisez "
+"Safari 7.0 ou supérieur."
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:56
+msgid ""
+"Something went wrong communicating with the push notification server, please "
+"try again later."
+msgstr ""
+"Quelque chose s'est mal passé lors de la communication avec le serveur de "
+"notification push, veuillez réessayer plus tard."
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:57
+msgid "Push notifications are enabled for this site."
+msgstr "Les notifications push sont activées pour ce site."
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:58
+msgid "You have opted not to receive push notifications from us."
+msgstr ""
+"Vous avez choisi de ne pas recevoir de notifications push de notre part."
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:58
+msgid "Enable push notifications"
+msgstr "Activer les notifications push"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:168
+msgid "Safari Push Notification Options"
+msgstr "Options de Safari Push Notification"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:174
+msgid "Send a push notification"
+msgstr "Envoyer une notification push"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:176
+msgid ""
+"Use the form below to send a notification (note that this will be sent to "
+"all currently subscribed recipients!)"
+msgstr ""
+"Utilisez le formulaire ci-dessous pour envoyer une notification (notez "
+"qu'elle sera envoyée à toutes les personnes actuellement inscrites !)"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:178
+msgid "Notification Title"
+msgstr "Titre de la notification"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:181
+msgid "Notification Body"
+msgstr "Corps de la notification"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:191
+msgid "More information on Safari Push Notifications"
+msgstr "Plus d'informations sur les notifications push de Safari"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:192
+msgid "Safari Push Notification Plugin for Wordpress by"
+msgstr "Extension WordPress Safari Push Notification par"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:193
+msgid "Plugin version"
+msgstr "Version de l'extension"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:207
+msgid "Base URL to your push web service, e.g. https://mypushservice.com"
+msgstr ""
+"URL de base de votre service web de push, ex : https://mypushservice.com"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:210
+msgid "Unique identifier for your Website Push ID, e.g. web.com.mysite"
+msgstr "Identifiant unique pour votre site Push ID, ex : web.com.monsite"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:213
+msgid ""
+"Endpoint for your web service to receive new notifications, e.g. /v1/push"
+msgstr ""
+"Point d'arrivé de votre service web pour recevoir de nouvelles "
+"notifications, ex : /v1/push"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:216
+msgid "Authentication code for your web service"
+msgstr "Code d'authentification de votre service web"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:219
+msgid "Endpoint tag for push notification title, e.g. title"
+msgstr ""
+"Marqueur du point d'arrivé pour le titre des notifications push, ex : titre"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:222
+msgid "Endpoint tag for push notification body, e.g. body"
+msgstr ""
+"Marqueur du point d'arrivé pour le corps des notifications push, ex : corps"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:225
+msgid "Endpoint tag for push notification action button label, e.g. button"
+msgstr ""
+"Marqueur du point d'arrivé pour le label des boutons d'actions des "
+"notifications push, ex : bouton"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:228
+msgid "Endpoint tag for push notification URL arguments, e.g. urlargs"
+msgstr ""
+"Marqueur du point d'arrivé pour les arguments d'URL des notifications push, "
+"ex : urlargs"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:231
+msgid "Endpoint tag for push notification authentication, e.g. auth"
+msgstr ""
+"Marqueur du point d'arrivé pour l'authentification des notifications push, "
+"ex : auth"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:234
+msgid "Default HTML to display in Shortcode"
+msgstr "HTML par défaut à afficher dans le shortcode"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:237
+msgid "HTML to display in Shortcode on unsupported systems"
+msgstr "HTML à afficher dans le shortcode sur les systèmes non supportés"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:240
+msgid "HTML to display in Shortcode in case of error"
+msgstr "HTML à afficher dans le shortcode en cas d'erreur"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:243
+msgid "HTML to display in Shortcode when notifications have been granted"
+msgstr ""
+"HTML à afficher dans le shortcode quand les notifications ont été autorisées"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:246
+msgid ""
+"HTML to display in Shortcode when notifications have been denied (use "
+"onClick=\"surrealroad_safaripush_requestPermission();\" on a button to allow "
+"the user to request permission again)"
+msgstr ""
+"HTML à afficher dans le shortcode quand les notifications ont été refusées "
+"(utilisez onClick=\"surrealroad_safaripush_requestPermission();\" sur un "
+"bouton pour autoriser l'utilisateur de demander de nouveau la permission)"

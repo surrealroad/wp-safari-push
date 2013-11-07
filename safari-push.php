@@ -6,6 +6,8 @@ Description: Allows WordPress to publish updates to a push server for Safari bro
 Version: 0.5.3
 Author: Surreal Road Limited
 Author URI: http://www.surrealroad.com
+Text Domain: safari-push
+Domain Path: /languages
 License: MIT
 */
 
@@ -49,11 +51,11 @@ class SafariPush {
 		add_option("safaripush_actiontag", "button");
 		add_option("safaripush_actionurlargstag", "urlargs");
 		add_option("safaripush_authtag", "");
-		add_option("safaripush_defaultmsg", '<div class="alert alert-info"><p>To enable push notifications for this site, click "Allow" when Safari asks you.</p></div>');
-		add_option("safaripush_unsupportedmsg", '<div class="alert alert-warning"><p>To enable or modify push notifications for this site, use Safari 7.0 or newer.</p></div>');
-		add_option("safaripush_errormsg", '<div class="alert alert-danger"><p>Something went wrong communicating with the push notification server, please try again later.</p></div>');
-		add_option("safaripush_grantedmsg", '<div class="alert alert-success"><p>Push notifications are enabled for this site.</p></div>');
-		add_option("safaripush_deniedmsg", '<div class="alert alert-warning"><p>You have opted not to receive push notifications from us.</p><button class="btn btn-default btn-small" onClick="surrealroad_safaripush_requestPermission();">Enable push notifications</button></div>');
+		add_option("safaripush_defaultmsg", '<div class="alert alert-info"><p>' . __( 'To enable push notifications for this site, click "Allow" when Safari asks you.', 'safari-push' ) . '</p></div>');
+		add_option("safaripush_unsupportedmsg", '<div class="alert alert-warning"><p>' . __( 'To enable or modify push notifications for this site, use Safari 7.0 or newer.', 'safari-push' ) . '</p></div>');
+		add_option("safaripush_errormsg", '<div class="alert alert-danger"><p>' . __( 'Something went wrong communicating with the push notification server, please try again later.', 'safari-push' ) . '</p></div>');
+		add_option("safaripush_grantedmsg", '<div class="alert alert-success"><p>' . __( 'Push notifications are enabled for this site.', 'safari-push' ) . '</p></div>');
+		add_option("safaripush_deniedmsg", '<div class="alert alert-warning"><p>' . __( 'You have opted not to receive push notifications from us.', 'safari-push' ) . '</p><button class="btn btn-default btn-small" onClick="surrealroad_safaripush_requestPermission();">' . __( 'Enable push notifications', 'safari-push' ) . '</button></div>');
 	}
 
 	static function uninstall(){
@@ -77,7 +79,7 @@ class SafariPush {
 
 	public function init() {
 		//Allow translations
-		load_plugin_textdomain('safaripush', false, basename(dirname(__FILE__)).'/languages');
+		load_plugin_textdomain('safari-push', false, basename(dirname(__FILE__)).'/languages');
 
 		add_action('wp_enqueue_scripts', array($this, 'enqueuescripts'));
 		add_action('transition_post_status', array($this, 'notifyPost'), 10, 3);
@@ -163,20 +165,20 @@ class SafariPush {
 		?>
     <div class="wrap">
     	<?php screen_icon(); ?>
-        <h2>Safari Push Notification Options</h2>
+        <h2><?php _e( 'Safari Push Notification Options', 'safari-push' ) ?></h2>
         <form action="options.php" method="POST">
             <?php settings_fields( 'safaripush' ); ?>
             <?php do_settings_sections('safaripush'); ?>
             <?php submit_button(); ?>
         </form>
-        <h2>Send a push notification</h2>
+        <h2><?php _e( 'Send a push notification', 'safari-push' ) ?></h2>
         <form action="<?php echo get_option('safaripush_webserviceurl').get_option('safaripush_pushendpoint'); ?>" method="POST" ?>
-        Use the form below to send a notification (note that this will be sent to all currently subscribed recipients!)
+        <?php _e( 'Use the form below to send a notification (note that this will be sent to all currently subscribed recipients!)', 'safari-push' ) ?>
         <table class="form-table"><tbody>
-        <tr valign="top"><th scope="row">Notification Title</th>
+        <tr valign="top"><th scope="row"><?php _e( 'Notification Title', 'safari-push' ) ?></th>
         <td><input type="text" name="<?php echo get_option('safaripush_titletag'); ?>" value="" /></td>
         </tr>
-        <tr valign="top"><th scope="row">Notification Body</th>
+        <tr valign="top"><th scope="row"><?php _e( 'Notification Body', 'safari-push' ) ?></th>
         <td><input type="text" name="<?php echo get_option('safaripush_bodytag'); ?>" value="" /></td>
         </tr>
         </tbody></table>
@@ -186,9 +188,9 @@ class SafariPush {
         <?php submit_button("Push", "small"); ?>
         </form>
         <hr/>
-        <p><a href="https://developer.apple.com/notifications/safari-push-notifications/">More information on Safari Push Notifications</a></p>
-        <p>Safari Push Notification Plugin for Wordpress by <a href="http://www.surrealroad.com">Surreal Road</a>. <?php echo self::surrealTagline(); ?>.</p>
-        <p>Plugin version <?php echo self::$version; ?></p>
+        <p><a href="https://developer.apple.com/notifications/safari-push-notifications/"><?php _e( 'More information on Safari Push Notifications', 'safari-push' ) ?></a></p>
+        <p><?php _e( 'Safari Push Notification Plugin for Wordpress by', 'safari-push' ) ?> <a href="http://www.surrealroad.com">Surreal Road</a>. <?php echo self::surrealTagline(); ?>.</p>
+        <p><?php _e( 'Plugin version', 'safari-push' ) ?> <?php echo self::$version; ?></p>
     </div>
     <?php
 	}
@@ -202,46 +204,46 @@ class SafariPush {
     }
 
     function webServiceURLInput(){
-    	self::text_input('safaripush_webserviceurl', 'Base URL to your push web service, e.g. https://mypushservice.com');
+    	self::text_input('safaripush_webserviceurl', __( 'Base URL to your push web service, e.g. https://mypushservice.com', 'safari-push' ) );
     }
     function websitePushIDInput(){
-    	self::text_input('safaripush_websitepushid', 'Unique identifier for your Website Push ID, e.g. web.com.mysite');
+    	self::text_input('safaripush_websitepushid', __( 'Unique identifier for your Website Push ID, e.g. web.com.mysite', 'safari-push' ) );
     }
     function pushEndpointInput(){
-    	self::text_input('safaripush_pushendpoint', 'Endpoint for your web service to receive new notifications, e.g. /v1/push');
+    	self::text_input('safaripush_pushendpoint', __( 'Endpoint for your web service to receive new notifications, e.g. /v1/push', 'safari-push' ) );
     }
     function webServiceAuthInput(){
-    	self::text_input('safaripush_authcode', 'Authentication code for your web service');
+    	self::text_input('safaripush_authcode', __( 'Authentication code for your web service', 'safari-push' ) );
     }
     function pushTitleTagInput(){
-    	self::text_input('safaripush_titletag', 'Endpoint tag for push notification title, e.g. title');
+    	self::text_input('safaripush_titletag', __( 'Endpoint tag for push notification title, e.g. title', 'safari-push' ) );
     }
     function pushBodyTagInput(){
-    	self::text_input('safaripush_bodytag', 'Endpoint tag for push notification body, e.g. body');
+    	self::text_input('safaripush_bodytag', __( 'Endpoint tag for push notification body, e.g. body', 'safari-push' ) );
     }
     function pushActionTagInput(){
-    	self::text_input('safaripush_actiontag', 'Endpoint tag for push notification action button label, e.g. button');
+    	self::text_input('safaripush_actiontag', __( 'Endpoint tag for push notification action button label, e.g. button', 'safari-push' ) );
     }
     function pushURLArgsTagInput(){
-    	self::text_input('safaripush_urlargstag', 'Endpoint tag for push notification URL arguments, e.g. urlargs');
+    	self::text_input('safaripush_urlargstag', __( 'Endpoint tag for push notification URL arguments, e.g. urlargs', 'safari-push' ) );
     }
     function pushAuthTagInput(){
-    	self::text_input('safaripush_authtag', 'Endpoint tag for push notification authentication, e.g. auth');
+    	self::text_input('safaripush_authtag', __( 'Endpoint tag for push notification authentication, e.g. auth', 'safari-push' ) );
     }
     function shortcodeDefaultmsgInput(){
-    	self::text_area('safaripush_defaultmsg', 'Default HTML to display in Shortcode');
+    	self::text_area('safaripush_defaultmsg', __( 'Default HTML to display in Shortcode', 'safari-push' ) );
     }
     function shortcodeUnsupportedmsgInput(){
-    	self::text_area('safaripush_unsupportedmsg', 'HTML to display in Shortcode on unsupported systems');
+    	self::text_area('safaripush_unsupportedmsg', __( 'HTML to display in Shortcode on unsupported systems', 'safari-push' ) );
     }
     function shortcodeErrormsgInput(){
-    	self::text_area('safaripush_errormsg', 'HTML to display in Shortcode in case of error');
+    	self::text_area('safaripush_errormsg', __( 'HTML to display in Shortcode in case of error', 'safari-push') );
     }
     function shortcodeGrantedmsgInput(){
-    	self::text_area('safaripush_grantedmsg', 'HTML to display in Shortcode when notifications have been granted');
+    	self::text_area('safaripush_grantedmsg', __( 'HTML to display in Shortcode when notifications have been granted', 'safari-push' ) );
     }
     function shortcodeDeniedmsgInput(){
-    	self::text_area('safaripush_deniedmsg', 'HTML to display in Shortcode when notifications have been denied (use onClick="surrealroad_safaripush_requestPermission();" on a button to allow the user to request permission again)');
+    	self::text_area('safaripush_deniedmsg', __('HTML to display in Shortcode when notifications have been denied (use onClick="surrealroad_safaripush_requestPermission();" on a button to allow the user to request permission again)', 'safari-push') );
     }
 
     // send notification
