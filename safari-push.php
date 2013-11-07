@@ -86,23 +86,23 @@ class SafariPush {
 	}
 
 	public function admin_init() {
-	    add_settings_section('safaripush-webservice', 'Web Service Settings', array($this, 'initWebServiceSettings'), 'safaripush');
-	    add_settings_field('safaripush-web-service-url', 'Web Service URL', array($this, 'webServiceURLInput'), 'safaripush', 'safaripush-webservice');
-	    add_settings_field('safaripush-website-push-id', 'Website Push ID', array($this, 'websitePushIDInput'), 'safaripush', 'safaripush-webservice');
-	    add_settings_field('safaripush-push-endpoint', 'Web Service Push Endpoint', array($this, 'pushEndpointInput'), 'safaripush', 'safaripush-webservice');
-   	    add_settings_field('safaripush-auth-code', 'Web Service Authentication Code', array($this, 'webServiceAuthInput'), 'safaripush', 'safaripush-webservice');
-	    add_settings_field('safaripush-title-tag', 'Web Service Push Title Tag', array($this, 'pushTitleTagInput'), 'safaripush', 'safaripush-webservice');
-	    add_settings_field('safaripush-body-tag', 'Web Service Push Body Tag', array($this, 'pushBodyTagInput'), 'safaripush', 'safaripush-webservice');
-	    add_settings_field('safaripush-action-tag', 'Web Service Push Action Tag', array($this, 'pushActionTagInput'), 'safaripush', 'safaripush-webservice');
-	    add_settings_field('safaripush-url-args-tag', 'Web Service Push URL Arguments Tag', array($this, 'pushURLArgsTagInput'), 'safaripush', 'safaripush-webservice');
-	    add_settings_field('safaripush-auth-tag', 'Web Service Push Authentication Tag', array($this, 'pushAuthTagInput'), 'safaripush', 'safaripush-webservice');
+	    add_settings_section('safaripush-webservice', __( 'Web Service Settings', 'safari-push' ), array($this, 'initWebServiceSettings'), 'safaripush');
+	    add_settings_field('safaripush-web-service-url', __( 'Web Service URL', 'safari-push' ), array($this, 'webServiceURLInput'), 'safaripush', 'safaripush-webservice');
+	    add_settings_field('safaripush-website-push-id', __( 'Website Push ID', 'safari-push' ), array($this, 'websitePushIDInput'), 'safaripush', 'safaripush-webservice');
+	    add_settings_field('safaripush-push-endpoint', __( 'Web Service Push Endpoint', 'safari-push' ), array($this, 'pushEndpointInput'), 'safaripush', 'safaripush-webservice');
+   	    add_settings_field('safaripush-auth-code', __( 'Web Service Authentication Code', 'safari-push' ), array($this, 'webServiceAuthInput'), 'safaripush', 'safaripush-webservice');
+	    add_settings_field('safaripush-title-tag', __( 'Web Service Push Title Tag', 'safari-push' ), array($this, 'pushTitleTagInput'), 'safaripush', 'safaripush-webservice');
+	    add_settings_field('safaripush-body-tag', __( 'Web Service Push Body Tag', 'safari-push' ), array($this, 'pushBodyTagInput'), 'safaripush', 'safaripush-webservice');
+	    add_settings_field('safaripush-action-tag', __( 'Web Service Push Action Tag', 'safari-push' ), array($this, 'pushActionTagInput'), 'safaripush', 'safaripush-webservice');
+	    add_settings_field('safaripush-url-args-tag', __( 'Web Service Push URL Arguments Tag', 'safari-push' ), array($this, 'pushURLArgsTagInput'), 'safaripush', 'safaripush-webservice');
+	    add_settings_field('safaripush-auth-tag', __( 'Web Service Push Authentication Tag', 'safari-push' ), array($this, 'pushAuthTagInput'), 'safaripush', 'safaripush-webservice');
 
-	    add_settings_section('safaripush-shortcode', 'Shortcode Settings', array($this, 'initShortcodeSettings'), 'safaripush');
-	    add_settings_field('safaripush-shortcode-default-msg', 'Default message', array($this, 'shortcodeDefaultmsgInput'), 'safaripush', 'safaripush-shortcode');
-	    add_settings_field('safaripush-shortcode-unsupported-msg', 'Unsupported system message', array($this, 'shortcodeUnsupportedmsgInput'), 'safaripush', 'safaripush-shortcode');
-	    add_settings_field('safaripush-shortcode-error-msg', 'Error message', array($this, 'shortcodeErrormsgInput'), 'safaripush', 'safaripush-shortcode');
-	    add_settings_field('safaripush-shortcode-granted-msg', 'Permission granted message', array($this, 'shortcodeGrantedmsgInput'), 'safaripush', 'safaripush-shortcode');
-	    add_settings_field('safaripush-shortcode-denied-msg', 'Permission denied message', array($this, 'shortcodeDeniedmsgInput'), 'safaripush', 'safaripush-shortcode');
+	    add_settings_section('safaripush-shortcode', __( 'Shortcode Settings', 'safari-push' ), array($this, 'initShortcodeSettings'), 'safaripush');
+	    add_settings_field('safaripush-shortcode-default-msg', __( 'Default message', 'safari-push' ), array($this, 'shortcodeDefaultmsgInput'), 'safaripush', 'safaripush-shortcode');
+	    add_settings_field('safaripush-shortcode-unsupported-msg', __( 'Unsupported system message', 'safari-push' ), array($this, 'shortcodeUnsupportedmsgInput'), 'safaripush', 'safaripush-shortcode');
+	    add_settings_field('safaripush-shortcode-error-msg', __( 'Error message', 'safari-push' ), array($this, 'shortcodeErrormsgInput'), 'safaripush', 'safaripush-shortcode');
+	    add_settings_field('safaripush-shortcode-granted-msg', __( 'Permission granted message', 'safari-push' ), array($this, 'shortcodeGrantedmsgInput'), 'safaripush', 'safaripush-shortcode');
+	    add_settings_field('safaripush-shortcode-denied-msg', __( 'Permission denied message', 'safari-push' ), array($this, 'shortcodeDeniedmsgInput'), 'safaripush', 'safaripush-shortcode');
     }
 
     function registerSettings() {

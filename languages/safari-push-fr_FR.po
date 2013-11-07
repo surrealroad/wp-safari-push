@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Safari Push\n"
-"POT-Creation-Date: 2013-11-07 13:19+0100\n"
-"PO-Revision-Date: 2013-11-07 13:19+0100\n"
+"POT-Creation-Date: 2013-11-07 13:27+0100\n"
+"PO-Revision-Date: 2013-11-07 13:32+0100\n"
 "Last-Translator: Rémy Perona <remperona@gmail.com>\n"
 "Language-Team: Rémy Perona <remperona@gmail.com>\n"
 "Language: Français\n"
@@ -53,6 +53,70 @@ msgstr ""
 #: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:58
 msgid "Enable push notifications"
 msgstr "Activer les notifications push"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:89
+msgid "Web Service Settings"
+msgstr "Réglages du service web"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:90
+msgid "Web Service URL"
+msgstr "URL du service web"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:91
+msgid "Website Push ID"
+msgstr "ID push du site internet"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:92
+msgid "Web Service Push Endpoint"
+msgstr "Point d'arrivé du service web push"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:93
+msgid "Web Service Authentication Code"
+msgstr "Code d'authentification du service web"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:94
+msgid "Web Service Push Title Tag"
+msgstr "Marqueur titre du service web push"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:95
+msgid "Web Service Push Body Tag"
+msgstr "Marqueur corps du service web push"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:96
+msgid "Web Service Push Action Tag"
+msgstr "Marqueur action du service web push"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:97
+msgid "Web Service Push URL Arguments Tag"
+msgstr "Marqueur des arguments de l'URL du service web push"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:98
+msgid "Web Service Push Authentication Tag"
+msgstr "Marqueur d'authentification du service web push"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:100
+msgid "Shortcode Settings"
+msgstr "Réglages du shortcode"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:101
+msgid "Default message"
+msgstr "Message par défaut"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:102
+msgid "Unsupported system message"
+msgstr "Message pour les systèmes non supportés"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:103
+msgid "Error message"
+msgstr "Message d'erreur"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:104
+msgid "Permission granted message"
+msgstr "Message pour la permission autorisée"
+
+#: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:105
+msgid "Permission denied message"
+msgstr "Message pour la permission refusée"
 
 #: /Users/Yui/Sites/wordpress/wp-content/plugins/wp-safari-push/safari-push.php:168
 msgid "Safari Push Notification Options"
@@ -163,4 +227,4 @@ msgid ""
 msgstr ""
 "HTML à afficher dans le shortcode quand les notifications ont été refusées "
 "(utilisez onClick=\"surrealroad_safaripush_requestPermission();\" sur un "
-"bouton pour autoriser l'utilisateur de demander de nouveau la permission)"
+"bouton pour autoriser l'utilisateur à demander de nouveau la permission)"
