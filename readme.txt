@@ -1,6 +1,6 @@
 === Safari Push ===
 Tags: safari, push notifications, mac, os x, mavericks
-Stable tag: 0.5.3
+Stable tag: 0.6
 Tested up to: 3.7.1
 
 A Safari Push Plugin for Wordpress
@@ -22,7 +22,7 @@ For much more information on this, see https://developer.apple.com/notifications
 
 What else do I need in order to use this plugin?
 --
-You'll also need a working https server for communicating with Safari and Apple Push Notification Server (referred to as the "Web Service") .
+You'll also need a seperate, working HTTPS server for communicating with Safari and Apple Push Notification Server (referred to as the "Web Service").
 For a PHP implementation of the Web Service, refer to our reference project at https://github.com/surrealroad/Safari-Push-Notifications.
 
 Can I see it in action?
@@ -31,10 +31,14 @@ Sure, go to http://www.controlcommandescape.com/push/ (you'll probably want to o
 
 
 TODO:
+- Pushwoosh integration
 - Comply with WordPress security guidelines
 - Better option for test notification
 
 == Changelog ==
+= 0.6 =
+* French localisation with thanks to Rémy Perona (http://remyperona.fr/)
+
 = 0.5.3 =
 * Remove subfolder for better compatibility
 
