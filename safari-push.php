@@ -3,7 +3,7 @@
 Plugin Name: Safari Push Notifications
 Plugin URI: https://github.com/surrealroad/wp-safari-push
 Description: Allows WordPress to publish updates to a push server for Safari browsers
-Version: 0.6
+Version: 0.7
 Author: Surreal Road Limited
 Author URI: http://www.surrealroad.com
 Text Domain: safari-push
@@ -20,13 +20,14 @@ if ( !function_exists( 'add_action' ) ) {
 class SafariPush {
 
 	//Version
-	static $version ='0.6';
+	static $version ='0.7';
 	static $apiversion = 'v1';
+	static $pushwooshEndpoint = 'https://cp.pushwoosh.com/json/1.3/';
 
 	//Options and defaults
 	static $options = array(
 		'websitePushID' => "",
-		'webServiceURL' => ""
+		'webServiceURL' => "",
 	);
 
 	public function __construct() {
@@ -42,6 +43,7 @@ class SafariPush {
 	static function install(){
 		update_option("safaripush_version",self::$version);
 		update_option("safaripush_apiversion",self::$apiversion);
+		add_option("safaripush_servertype", 0);
 		add_option("safaripush_webserviceurl", "");
 		add_option("safaripush_websitepushid", "");
 		add_option("safaripush_pushendpoint", "/".self::$apiversion."/push");
@@ -51,6 +53,8 @@ class SafariPush {
 		add_option("safaripush_actiontag", "button");
 		add_option("safaripush_actionurlargstag", "urlargs");
 		add_option("safaripush_authtag", "");
+		add_option("safaripush_pushwooshapplication", "");
+		add_option("safaripush_pushwooshendpoint",self::$pushwooshEndpoint);
 		add_option("safaripush_defaultmsg", '<div class="alert alert-info"><p>' . __( 'To enable push notifications for this site, click "Allow" when Safari asks you.', 'safari-push' ) . '</p></div>');
 		add_option("safaripush_unsupportedmsg", '<div class="alert alert-warning"><p>' . __( 'To enable or modify push notifications for this site, use Safari 7.0 or newer.', 'safari-push' ) . '</p></div>');
 		add_option("safaripush_errormsg", '<div class="alert alert-danger"><p>' . __( 'Something went wrong communicating with the push notification server, please try again later.', 'safari-push' ) . '</p></div>');
@@ -61,6 +65,7 @@ class SafariPush {
 	static function uninstall(){
 		delete_option('safaripush_version');
 		delete_option('safaripush_apiversion');
+		delete_option('safaripush_servertype');
 		delete_option('safaripush_webserviceurl');
 		delete_option('safaripush_authcode');
 		delete_option('safaripush_websitepushid');
@@ -69,6 +74,8 @@ class SafariPush {
 		delete_option('safaripush_bodytag');
 		delete_option('safaripush_actiontag');
 		delete_option('safaripush_actionurlargstag');
+		delete_option('safaripush_pushwooshapplication');
+		delete_option('safaripush_pushwooshendpoint');
 		delete_option('safaripush_defaultmsg');
 		delete_option('safaripush_unsupportedmsg');
 		delete_option('safaripush_errormsg');
@@ -86,16 +93,25 @@ class SafariPush {
 	}
 
 	public function admin_init() {
+	    add_settings_section('safaripush-mode', __( 'Push Server Type', 'safari-push' ), array($this, 'initModeSettings'), 'safaripush');
+	    add_settings_field('safaripush-server-type', __( 'Push Server Type', 'safari-push' ), array($this, 'webServerTypeInput'), 'safaripush', 'safaripush-mode');
+
 	    add_settings_section('safaripush-webservice', __( 'Web Service Settings', 'safari-push' ), array($this, 'initWebServiceSettings'), 'safaripush');
-	    add_settings_field('safaripush-web-service-url', __( 'Web Service URL', 'safari-push' ), array($this, 'webServiceURLInput'), 'safaripush', 'safaripush-webservice');
 	    add_settings_field('safaripush-website-push-id', __( 'Website Push ID', 'safari-push' ), array($this, 'websitePushIDInput'), 'safaripush', 'safaripush-webservice');
-	    add_settings_field('safaripush-push-endpoint', __( 'Web Service Push Endpoint', 'safari-push' ), array($this, 'pushEndpointInput'), 'safaripush', 'safaripush-webservice');
    	    add_settings_field('safaripush-auth-code', __( 'Web Service Authentication Code', 'safari-push' ), array($this, 'webServiceAuthInput'), 'safaripush', 'safaripush-webservice');
-	    add_settings_field('safaripush-title-tag', __( 'Web Service Push Title Tag', 'safari-push' ), array($this, 'pushTitleTagInput'), 'safaripush', 'safaripush-webservice');
-	    add_settings_field('safaripush-body-tag', __( 'Web Service Push Body Tag', 'safari-push' ), array($this, 'pushBodyTagInput'), 'safaripush', 'safaripush-webservice');
-	    add_settings_field('safaripush-action-tag', __( 'Web Service Push Action Tag', 'safari-push' ), array($this, 'pushActionTagInput'), 'safaripush', 'safaripush-webservice');
-	    add_settings_field('safaripush-url-args-tag', __( 'Web Service Push URL Arguments Tag', 'safari-push' ), array($this, 'pushURLArgsTagInput'), 'safaripush', 'safaripush-webservice');
-	    add_settings_field('safaripush-auth-tag', __( 'Web Service Push Authentication Tag', 'safari-push' ), array($this, 'pushAuthTagInput'), 'safaripush', 'safaripush-webservice');
+
+	    add_settings_section('safaripush-dedicated', __( 'Web Service Settings (Dedicated Server only)', 'safari-push' ), array($this, 'initDedicatedServerSettings'), 'safaripush');
+	    add_settings_field('safaripush-web-service-url', __( 'Web Service URL', 'safari-push' ), array($this, 'webServiceURLInput'), 'safaripush', 'safaripush-dedicated');
+	    add_settings_field('safaripush-push-endpoint', __( 'Web Service Push Endpoint', 'safari-push' ), array($this, 'pushEndpointInput'), 'safaripush', 'safaripush-dedicated');
+	    add_settings_field('safaripush-title-tag', __( 'Web Service Push Title Tag', 'safari-push' ), array($this, 'pushTitleTagInput'), 'safaripush', 'safaripush-dedicated');
+	    add_settings_field('safaripush-body-tag', __( 'Web Service Push Body Tag', 'safari-push' ), array($this, 'pushBodyTagInput'), 'safaripush', 'safaripush-dedicated');
+	    add_settings_field('safaripush-action-tag', __( 'Web Service Push Action Tag', 'safari-push' ), array($this, 'pushActionTagInput'), 'safaripush', 'safaripush-dedicated');
+	    add_settings_field('safaripush-url-args-tag', __( 'Web Service Push URL Arguments Tag', 'safari-push' ), array($this, 'pushURLArgsTagInput'), 'safaripush', 'safaripush-dedicated');
+	    add_settings_field('safaripush-auth-tag', __( 'Web Service Push Authentication Tag', 'safari-push' ), array($this, 'pushAuthTagInput'), 'safaripush', 'safaripush-dedicated');
+
+	    add_settings_section('safaripush-pushwoosh', __( 'Web Service Settings (Pushwoosh only)', 'safari-push' ), array($this, 'initPushwooshSettings'), 'safaripush');
+	    add_settings_field('safaripush-pushwoosh-application', __( 'Application code', 'safari-push' ), array($this, 'pushwooshApplicationInput'), 'safaripush', 'safaripush-pushwoosh');
+	    add_settings_field('safaripush-pushwoosh-endpoint', __( 'Endpoint', 'safari-push' ), array($this, 'pushwooshEndpointInput'), 'safaripush', 'safaripush-pushwoosh');
 
 	    add_settings_section('safaripush-shortcode', __( 'Shortcode Settings', 'safari-push' ), array($this, 'initShortcodeSettings'), 'safaripush');
 	    add_settings_field('safaripush-shortcode-default-msg', __( 'Default message', 'safari-push' ), array($this, 'shortcodeDefaultmsgInput'), 'safaripush', 'safaripush-shortcode');
@@ -106,6 +122,7 @@ class SafariPush {
     }
 
     function registerSettings() {
+	    register_setting('safaripush', 'safaripush_servertype');
 	    register_setting('safaripush', 'safaripush_webserviceurl');
 	    register_setting('safaripush', 'safaripush_websitepushid');
 	    register_setting('safaripush', 'safaripush_pushendpoint');
@@ -115,6 +132,8 @@ class SafariPush {
 	    register_setting('safaripush', 'safaripush_actiontag');
 	    register_setting('safaripush', 'safaripush_urlargstag');
 	    register_setting('safaripush', 'safaripush_authtag');
+	    register_setting('safaripush', 'safaripush_pushwooshapplication');
+	    register_setting('safaripush', 'safaripush_pushwooshendpoint');
 	    register_setting('safaripush', 'safaripush_defaultmsg');
 	    register_setting('safaripush', 'safaripush_unsupportedmsg');
 	    register_setting('safaripush', 'safaripush_errormsg');
@@ -136,10 +155,13 @@ class SafariPush {
 		$params = array(
 			'token' => "",
 			'id' => "",
+			'serverType' => get_option('safaripush_servertype'),
 			'webServiceURL' => get_option('safaripush_webserviceurl'),
 			'websitePushID' => get_option('safaripush_websitepushid'),
 			'userInfo' => "",
 			'apiVersion' => get_option('safaripush_apiversion'),
+			'pushwooshEndpoint' => get_option('safaripush_pushwooshendpoint'),
+			'pushwooshApplication' => get_option('safaripush_pushwooshapplication'),
 			'defaultMsg' => get_option('safaripush_defaultmsg'),
 			'unsupportedMsg' => get_option('safaripush_unsupportedmsg'),
 			'errorMsg' => get_option('safaripush_errormsg'),
@@ -171,22 +193,84 @@ class SafariPush {
             <?php do_settings_sections('safaripush'); ?>
             <?php submit_button(); ?>
         </form>
-        <h2><?php _e( 'Send a push notification', 'safari-push' ) ?></h2>
-        <form action="<?php echo get_option('safaripush_webserviceurl').get_option('safaripush_pushendpoint'); ?>" method="POST" ?>
-        <?php _e( 'Use the form below to send a notification (note that this will be sent to all currently subscribed recipients!)', 'safari-push' ) ?>
-        <table class="form-table"><tbody>
-        <tr valign="top"><th scope="row"><?php _e( 'Notification Title', 'safari-push' ) ?></th>
-        <td><input type="text" name="<?php echo get_option('safaripush_titletag'); ?>" value="" /></td>
-        </tr>
-        <tr valign="top"><th scope="row"><?php _e( 'Notification Body', 'safari-push' ) ?></th>
-        <td><input type="text" name="<?php echo get_option('safaripush_bodytag'); ?>" value="" /></td>
-        </tr>
-        </tbody></table>
-        <input type="hidden" name="<?php echo get_option('safaripush_authtag'); ?>" value="<?php echo get_option('safaripush_authcode'); ?>" />
-        <input type="hidden" name="<?php echo get_option('safaripush_urlargstag'); ?>" value="" />
-        <input type="hidden" name="<?php echo get_option('safaripush_actiontag'); ?>" value="View" />
-        <?php submit_button("Push", "small"); ?>
-        </form>
+        <?php if(get_option('safaripush_servertype')===1) { //pushwoosh ?>
+        	<h2><?php _e( 'Send a pushwoosh notification', 'safari-push' ) ?></h2>
+        	<?php _e( 'Use the form below to send a notification through pushwoosh (note that this will be sent to all currently subscribed recipients!)<br/>Be sure to save all settings first.', 'safari-push' ) ?>
+        	<form id="pushwoosh-test" action="">
+        	<table class="form-table"><tbody>
+	        <tr valign="top"><th scope="row"><?php _e( 'Notification Title', 'safari-push' ) ?></th>
+	        <td><input type="text" name="test-title" value="" /></td>
+	        </tr>
+	        <tr valign="top"><th scope="row"><?php _e( 'Notification Body', 'safari-push' ) ?></th>
+	        <td><input type="text" name="test-body" value="" /></td>
+	        </tr>
+	        </tbody></table>
+	        <?php submit_button("Push", "small"); ?>
+        	</form>
+        	<div id="test-result"></div>
+        	<script type="text/javascript">
+        		jQuery(document).ready(function($){
+
+					$("#pushwoosh-test").submit(function(){
+
+						var testtitle = $("#test-title").val(),
+							testbody = $("#test-body").val();
+						var testdata = '{"request":{
+							"application":"<?php echo get_option('safaripush_pushwooshapplication'); ?>",
+							"auth":"<?php get_option('safaripush_authcode'); ?>"
+							"notifications":[
+								{
+									"send_date":"now",
+									"content":"en",
+									"platforms":10,
+									"data":{"custom":"json data"},
+									"link":"",
+									"safari_title":"'+testtitle+'",
+									"safari_action":"View",
+									"safari_url_args":""
+								}
+							]
+	                    }}';
+
+						$.ajax({
+							type: "POST",
+							url: "postForm.ajax.php",
+							data: testdata,
+							dataType: "json",
+
+							success: function(msg){
+								$("#test-result").html(msg.message);
+							},
+							error: function(){
+								$("#test-result").html("There was an error submitting the form. Please try again.");
+							}
+						});
+
+						//make sure the form doesn't post
+						return false;
+
+					});
+
+				});
+        	</script>
+        <?php } else { ?>
+        	<h2><?php _e( 'Send a push notification', 'safari-push' ) ?></h2>
+	        <form action="<?php echo get_option('safaripush_webserviceurl').get_option('safaripush_pushendpoint'); ?>" method="POST" ?>
+	        <?php _e( 'Use the form below to send a notification (note that this will be sent to all currently subscribed recipients!)<br/>Be sure to save all settings first.', 'safari-push' ) ?>
+	        <table class="form-table"><tbody>
+	        <tr valign="top"><th scope="row"><?php _e( 'Notification Title', 'safari-push' ) ?></th>
+	        <td><input type="text" name="<?php echo get_option('safaripush_titletag'); ?>" value="" /></td>
+	        </tr>
+	        <tr valign="top"><th scope="row"><?php _e( 'Notification Body', 'safari-push' ) ?></th>
+	        <td><input type="text" name="<?php echo get_option('safaripush_bodytag'); ?>" value="" /></td>
+	        </tr>
+	        </tbody></table>
+	        <input type="hidden" name="<?php echo get_option('safaripush_authtag'); ?>" value="<?php echo get_option('safaripush_authcode'); ?>" />
+	        <input type="hidden" name="<?php echo get_option('safaripush_urlargstag'); ?>" value="" />
+	        <input type="hidden" name="<?php echo get_option('safaripush_actiontag'); ?>" value="View" />
+	        <?php submit_button("Push", "small"); ?>
+	        </form>
+        <?php } ?>
         <hr/>
         <p><a href="https://developer.apple.com/notifications/safari-push-notifications/"><?php _e( 'More information on Safari Push Notifications', 'safari-push' ) ?></a></p>
         <p><?php _e( 'Safari Push Notification Plugin for Wordpress by', 'safari-push' ) ?> <a href="http://www.surrealroad.com">Surreal Road</a>. <?php echo self::surrealTagline(); ?>.</p>
@@ -195,7 +279,19 @@ class SafariPush {
     <?php
 	}
 
+    function initModeSettings() {
+
+    }
+
     function initWebServiceSettings() {
+
+    }
+
+    function initDedicatedServerSettings() {
+
+    }
+
+    function initPushwooshSettings() {
 
     }
 
@@ -203,6 +299,9 @@ class SafariPush {
 
     }
 
+    function webServerTypeInput(){
+    	self::radio_input('safaripush_servertype', __( 'Web service type to use with this plugin', 'safari-push' ), array( __('Dedicated Push Service', 'safari-push' ), __('Pushwoosh', 'safari-push' )) );
+    }
     function webServiceURLInput(){
     	self::text_input('safaripush_webserviceurl', __( 'Base URL to your push web service, e.g. https://mypushservice.com', 'safari-push' ) );
     }
@@ -229,6 +328,12 @@ class SafariPush {
     }
     function pushAuthTagInput(){
     	self::text_input('safaripush_authtag', __( 'Endpoint tag for push notification authentication, e.g. auth', 'safari-push' ) );
+    }
+    function pushwooshApplicationInput(){
+    	self::text_input('safaripush_pushwooshapplication', __( 'Your Pushwoosh application code from the Control Panel, e.g. xxxxx-xxxxx', 'safari-push' ) );
+    }
+    function pushwooshEndpointInput(){
+    	self::text_input('safaripush_pushwooshendpoint', __( 'Pushwoosh web service endpoint URL, with slash, e.g. https://cp.pushwoosh.com/json/1.3/', 'safari-push' ) );
     }
     function shortcodeDefaultmsgInput(){
     	self::text_area('safaripush_defaultmsg', __( 'Default HTML to display in Shortcode', 'safari-push' ) );
@@ -263,38 +368,88 @@ class SafariPush {
 			$context);
     }
 
+    function newPushwooshNotification($endpoint, $data=array()) {
+    	// http://www.pushwoosh.com/programming-push-notification/pushwoosh-push-notification-remote-api/
+    	$url = $endpoint."createMessage";
+    	$json = json_encode( array( 'request' => $data ) );
+	    $params = array(
+            'http' => array(
+                'method' => 'POST',
+                'content' => $data
+            ));
+        $params['http']['header'] = 'Content-Type: application/json';
+
+        $ctx = stream_context_create($params);
+        $fp = fopen($url, 'rb', false, $ctx);
+        if (!$fp)
+            throw new Exception("Problem with $url, $php_errmsg");
+
+        $response = @stream_get_contents($fp);
+        if ($response === false)
+            return false;
+        return $response;
+    }
+
     function notifyPost($newStatus, $oldStatus, $post) {
     	if( 'publish' === $newStatus && 'publish' != $oldStatus && get_post_type($post) === 'post') { // only notify new of posts
-    		//wp_mail("jack@ctrlcmdesc.com", "push", $newStatus.$oldStatus.$post);
-	    	$serviceURL = get_option('safaripush_webserviceurl');
-	    	$endpoint = get_option('safaripush_pushendpoint');
-	    	$auth = get_option('safaripush_authcode');
-	    	$title = "New post published";
-	    	$body = $post->post_title;
-	    	$action = "View";
-	    	$url = parse_url( get_permalink( $post->id ) );
-	    	$urlargs = ltrim($url["path"],'/');
-	    	if(isset($url["query"])) $urlargs.="?".$url["query"];
-	    	$titleTag = get_option('safaripush_titletag');
-	    	$bodyTag = get_option('safaripush_bodytag');
-	    	$actionTag = get_option('safaripush_actiontag');
-	    	$urlargsTag = get_option('safaripush_urlargstag');
-	    	$authTag = get_option('safaripush_authtag');
-		    self::newPushNotification($serviceURL, $endpoint, $title, $body, $action, $urlargs, $auth, $titleTag, $bodyTag, $actionTag, $urlargsTag, $authTag);
+    		$serverType = get_option('safaripush_servertype');
+    		if($serverType === 1) { // pushwoosh
+    			$endpoint = get_option('safaripush_pushwooshendpoint');
+    			$url = parse_url( get_permalink( $post->id ) );
+		    	$urlargs = ltrim($url["path"],'/');
+    			$data = array(
+					'application' => get_option('safaripush_pushwooshapplication'),
+			        'auth' => get_option('safaripush_authcode'),
+			        'notifications' => array(
+	                    array(
+	                        'send_date' => 'now',
+	                        'content' => 'en',
+	                        'platforms'=> 10, // safari
+	                        'data' => array( 'custom' => 'json data' ),
+	                        'link' => get_permalink( $post->id ),
+	                        'safari_title' => $post->post_title,
+	                        'safari_action' => "View",
+	                        'safari_url_args' => $urlargs
+	                    )
+	                )
+    			);
+	    		self::newPushwooshNotification($endpoint, $data);
+    		} else {
+		    	$serviceURL = get_option('safaripush_webserviceurl');
+		    	$endpoint = get_option('safaripush_pushendpoint');
+		    	$auth = get_option('safaripush_authcode');
+		    	$title = "New post published";
+		    	$body = $post->post_title;
+		    	$action = "View";
+		    	$url = parse_url( get_permalink( $post->id ) );
+		    	$urlargs = ltrim($url["path"],'/');
+		    	if(isset($url["query"])) $urlargs.="?".$url["query"];
+		    	$titleTag = get_option('safaripush_titletag');
+		    	$bodyTag = get_option('safaripush_bodytag');
+		    	$actionTag = get_option('safaripush_actiontag');
+		    	$urlargsTag = get_option('safaripush_urlargstag');
+		    	$authTag = get_option('safaripush_authtag');
+			    self::newPushNotification($serviceURL, $endpoint, $title, $body, $action, $urlargs, $auth, $titleTag, $bodyTag, $actionTag, $urlargsTag, $authTag);
+		    }
 		}
     }
 
     // utility functions
 
 	function checkbox_input($option, $description) {
-	    if (get_option($option)) {
-	      $value = 'checked="checked"';
-	    } else {
-	      $value = '';
-	    }
 	    ?>
-	<input id='<?php echo $option?>' name='<?php echo $option?>' type='checkbox' value='1' <?php echo $value?> /> <?php echo $description ?>
+	<input id='<?php echo $option?>' name='<?php echo $option?>' type='checkbox' value='1' <?php checked( '1', get_option( $option ) ); ?> /> <?php echo $description ?>
 	    <?php
+	}
+	function radio_input($option, $description, $labels) {
+		$i = 0;
+		foreach($labels as $label) {
+	    ?>
+	<input name="<?php echo $option?>" type="radio" value="<?php echo $i; ?>" <?php checked( $i, get_option( $option ) ); ?> /> <?php echo($label); ?><br/>
+	    <?php
+	    	$i++;
+	    }
+	    echo $description;
 	}
 	function text_input($option, $description) {
 	    if (get_option($option)) {

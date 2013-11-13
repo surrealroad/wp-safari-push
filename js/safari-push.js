@@ -6,8 +6,14 @@ jQuery( document ).ready(function() {
 	if(SafariPushParams.websitePushID===null) {
 		console.log("Website Push ID is missing");
 		SafariPushParams.status = "error";
-	} else if(SafariPushParams.webServiceURL===null) {
+	} else if(SafariPushParams.serverType===null) {
+		console.log("Server type is missing");
+		SafariPushParams.status = "error";
+	} else if(SafariPushParams.serverType===0 && SafariPushParams.webServiceURL===null) {
 		console.log("Web Service URL is missing");
+		SafariPushParams.status = "error";
+	} else if(SafariPushParams.serverType===1 && SafariPushParams.pushwooshEndpoint===null) {
+		console.log("Pushwoosh Endpoint is missing");
 		SafariPushParams.status = "error";
 	} else if(window.navigator.userAgent.indexOf('7.0 Safari') > -1) {
 		surrealroad_safaripush_checkPermission();
@@ -35,7 +41,22 @@ function surrealroad_safaripush_checkPermission() {
 }
 
 function surrealroad_safaripush_requestPermission() {
-	window.safari.pushNotification.requestPermission(SafariPushParams.webServiceURL, SafariPushParams.websitePushID, null, surrealroad_safaripush_requestPermissionCallback);
+	if(SafariPushParams.serverType===1) { // pushwoosh
+		// http://www.pushwoosh.com/programming-push-notification/safari/safari-website-notifications/
+		window.safari.pushNotification.requestPermission(
+            SafariPushParams.pushwooshEndpoint+"safari",
+            SafariPushParams.websitePushID,
+            { application:SafariPushParams.pushwooshApplication },
+            surrealroad_safaripush_requestPermissionCallback
+		);
+	} else {
+		window.safari.pushNotification.requestPermission(
+			SafariPushParams.webServiceURL,
+			SafariPushParams.websitePushID,
+			null,
+			surrealroad_safaripush_requestPermissionCallback
+		);
+	}
 }
 
 function surrealroad_safaripush_requestPermissionCallback(permission) {
