@@ -192,7 +192,7 @@ class SafariPush {
             <?php do_settings_sections('safaripush'); ?>
             <?php submit_button(); ?>
         </form>
-        <?php if(get_option('safaripush_servertype')===1) { //pushwoosh ?>
+        <?php if(get_option('safaripush_servertype')==1) { //pushwoosh ?>
         	<h2><?php _e( 'Send a pushwoosh notification', 'safari-push' ) ?></h2>
         	<?php _e( 'Use the form below to send a notification through pushwoosh (note that this will be sent to all currently subscribed recipients!)<br/>Be sure to save all settings first.', 'safari-push' ) ?>
         	<form id="pushwoosh-test" action="">
@@ -210,26 +210,11 @@ class SafariPush {
         	<script type="text/javascript">
         		jQuery(document).ready(function($){
 
-					$("#pushwoosh-test").submit(function(){
+					$("#pushwoosh-test").submit(function(event){
 
 						var testtitle = $("#test-title").val(),
 							testbody = $("#test-body").val();
-						var testdata = '{"request":{
-							"application":"<?php echo get_option('safaripush_pushwooshapplication'); ?>",
-							"auth":"<?php get_option('safaripush_authcode'); ?>"
-							"notifications":[
-								{
-									"send_date":"now",
-									"content":"en",
-									"platforms":10,
-									"data":{"custom":"json data"},
-									"link":"",
-									"safari_title":"'+testtitle+'",
-									"safari_action":"View",
-									"safari_url_args":""
-								}
-							]
-	                    }}';
+						var testdata = '{\"request\":{\"application\":\"<?php echo get_option('safaripush_pushwooshapplication'); ?>\",\"auth\":\"<?php get_option('safaripush_authcode'); ?>\",\"notifications\":[{\"send_date\":\"now\",\"content\":\"en\",\"platforms\":10,\"data\":{\"custom\":\"json data\"},\"link\":\"\",\"safari_title\":\"'+testtitle+'\",\"safari_action\":\"View\",\"safari_url_args\":\"\"}]}}';
 
 						$.ajax({
 							type: "POST",
@@ -244,12 +229,8 @@ class SafariPush {
 								$("#test-result").html("There was an error submitting the form. Please try again.");
 							}
 						});
-
-						//make sure the form doesn't post
-						return false;
-
+						event.preventDefault();
 					});
-
 				});
         	</script>
         <?php } else { ?>
