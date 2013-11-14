@@ -227,18 +227,18 @@ class SafariPush {
                             	$("#test-result").html("<?php _e('Success! ', 'safari-push'); ?>"+msg.message);
                             },
                             error: function(xhr, errorType, exception){
-                            	$("#test-result").html("<?php _e('There was an error submitting the form<br/>Data sent: ', 'safari-push'); ?>"+testdata);
-							},
-							statusCode: {
-								404: function() {
-									$("#test-result").html("<?php _e('Endpoint not found (404)', 'safari-push'); ?>");
-								},
-								500: function() {
-									$("#test-result").html("<?php _e('Server error (500)', 'safari-push'); ?>");
-								},
-								504: function() {
-									$("#test-result").html("<?php _e('Gateway timed out (504)', 'safari-push'); ?>");
-								}
+                            	switch (xhr.status) {
+	                            	case 404:
+	                            		$("#test-result").html("<?php _e('Endpoint not found (404)', 'safari-push'); ?>");
+	                            		break;
+	                            	case 500:
+	                            		$("#test-result").html("<?php _e('Server error (500)', 'safari-push'); ?>");
+	                            	case 504:
+	                            		$("#test-result").html("<?php _e('Gateway timed out (504)', 'safari-push'); ?>");
+	                            	default:
+	                            		$("#test-result").html("<?php _e('There was an error submitting the form<br/>Data sent: ', 'safari-push'); ?>"+testdata);
+	                            		break;
+	                            	}
 							}
 						});
                     event.preventDefault();
