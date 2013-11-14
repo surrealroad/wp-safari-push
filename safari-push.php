@@ -37,7 +37,6 @@ class SafariPush {
 		add_action('admin_init', array($this, 'admin_init'));
 		add_action('admin_init', array($this,'registerSettings'));
 		add_action('admin_menu', array($this,'pluginSettings'));
-		add_action('admin_footer', array($this, 'ajaxSubmitPush'));
 	}
 
 	static function install(){
@@ -234,7 +233,7 @@ class SafariPush {
 
 						$.ajax({
 							type: "POST",
-							url: "postForm.ajax.php",
+							url: "<?php echo get_option('safaripush_pushwooshendpoint'); ?>createMessage",
 							data: testdata,
 							dataType: "json",
 
