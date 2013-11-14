@@ -214,22 +214,34 @@ class SafariPush {
 
 						var testtitle = $("#test-title").val(),
 							testbody = $("#test-body").val();
-						var testdata = '{\"request\":{\"application\":\"<?php echo get_option('safaripush_pushwooshapplication'); ?>\",\"auth\":\"<?php get_option('safaripush_authcode'); ?>\",\"notifications\":[{\"send_date\":\"now\",\"content\":\"en\",\"platforms\":10,\"data\":{\"custom\":\"json data\"},\"link\":\"\",\"safari_title\":\"'+testtitle+'\",\"safari_action\":\"View\",\"safari_url_args\":\"\"}]}}';
+						var testdata = JSON.stringify({"request":{"application":"<?php echo get_option('safaripush_pushwooshapplication'); ?>","auth":"<?php get_option('safaripush_authcode'); ?>","notifications":[{"send_date":"now","content":"en","platforms":10,"data":{"custom":"json data"},"link":"","safari_title":testtitle,"safari_action":"View","safari_url_args":""}]}});
 
 						$.ajax({
-							type: "POST",
-							url: "<?php echo get_option('safaripush_pushwooshendpoint'); ?>createMessage",
-							data: testdata,
-							dataType: "json",
+                            type: "POST",
+                            url: "<?php echo get_option('safaripush_pushwooshendpoint'); ?>createMessage",
+                            data: testdata,
+                            dataType: "json",
+                            contentType : 'application/json',
 
-							success: function(msg){
-								$("#test-result").html(msg.message);
+                            success: function(msg){
+                            	$("#test-result").html("<?php _e('Success! ', 'safari-push'); ?>"+msg.message);
+                            },
+                            error: function(xhr, errorType, exception){
+                            	$("#test-result").html("<?php _e('There was an error submitting the form<br/>Data sent: ', 'safari-push'); ?>"+testdata);
 							},
-							error: function(){
-								$("#test-result").html("There was an error submitting the form. Please try again.");
+							statusCode: {
+								404: function() {
+									$("#test-result").html("<?php _e('Endpoint not found (404)', 'safari-push'); ?>");
+								},
+								500: function() {
+									$("#test-result").html("<?php _e('Server error (500)', 'safari-push'); ?>");
+								},
+								504: function() {
+									$("#test-result").html("<?php _e('Gateway timed out (504)', 'safari-push'); ?>");
+								}
 							}
 						});
-						event.preventDefault();
+                    event.preventDefault();
 					});
 				});
         	</script>
