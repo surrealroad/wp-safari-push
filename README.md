@@ -9,6 +9,12 @@ This plugin lets you prompt users to allow Safari Push notifications from your W
 Additionally, it lets you use a shortcode `[safari-push]` anywhere you like that will provide feedback to visitors on their notification status.
 This plugin is intentionally kept simple, feel free to fork the source and modify it to suit your needs.
 
+The source is maintained on GitHub: https://github.com/surrealroad/wp-safari-push
+
+What this plugin won't do
+--
+This plugin doesn't communicate with Apple's Push Notification Service (APNS) directly. You need a dedicated, secure server for that, which is beyond the scope of this plugin. See below for more details.
+
 What are Safari Push Notifications?
 --
 Push notifications are a feature in Safari 7 and Mac OS 10.9 “Mavericks” that allow websites to send users notifications to their desktop, even when Safari is closed.
@@ -25,10 +31,9 @@ Sure, go to http://www.controlcommandescape.com/push/ (you'll probably want to o
 
 
 TODO:
-- Pushwoosh integration
+- Pushwoosh integration (pending response from PushWoosh support)
 - Comply with WordPress security guidelines
 - Better option for test notification
-
 
 Additional credits
 - Localisation and French-language version by Rémy Perona (http://remyperona.fr/)
