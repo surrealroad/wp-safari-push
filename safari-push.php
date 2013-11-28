@@ -3,7 +3,7 @@
 Plugin Name: Safari Push Notifications
 Plugin URI: https://github.com/surrealroad/wp-safari-push
 Description: Allows WordPress to publish updates to a push server for Safari browsers
-Version: 0.6.1
+Version: 0.6.2
 Author: Surreal Road Limited
 Author URI: http://www.surrealroad.com
 Text Domain: safari-push
@@ -20,7 +20,7 @@ if ( !function_exists( 'add_action' ) ) {
 class SafariPush {
 
 	//Version
-	static $version ='0.6.1';
+	static $version ='0.6.2';
 	static $apiversion = 'v1';
 
 	//Options and defaults
@@ -50,6 +50,8 @@ class SafariPush {
 		add_option("safaripush_actiontag", "button");
 		add_option("safaripush_actionurlargstag", "urlargs");
 		add_option("safaripush_authtag", "");
+		add_option("safaripush_pushtitle",  __( 'New post published', 'safari-push' ));
+		add_option("safaripush_pushlabel",  __( 'View', 'safari-push' ));
 		add_option("safaripush_defaultmsg", '<div class="alert alert-info"><p>' . __( 'To enable push notifications for this site, click "Allow" when Safari asks you.', 'safari-push' ) . '</p></div>');
 		add_option("safaripush_unsupportedmsg", '<div class="alert alert-warning"><p>' . __( 'To enable or modify push notifications for this site, use Safari 7.0 or newer.', 'safari-push' ) . '</p></div>');
 		add_option("safaripush_errormsg", '<div class="alert alert-danger"><p>' . __( 'Something went wrong communicating with the push notification server, please try again later.', 'safari-push' ) . '</p></div>');
@@ -68,6 +70,9 @@ class SafariPush {
 		delete_option('safaripush_bodytag');
 		delete_option('safaripush_actiontag');
 		delete_option('safaripush_actionurlargstag');
+		delete_option('safaripush_authtag');
+		delete_option('safaripush_pushtitle');
+		delete_option('safaripush_pushlabel');
 		delete_option('safaripush_defaultmsg');
 		delete_option('safaripush_unsupportedmsg');
 		delete_option('safaripush_errormsg');
@@ -96,6 +101,10 @@ class SafariPush {
 	    add_settings_field('safaripush-url-args-tag', __( 'Web Service Push URL Arguments Tag', 'safari-push' ), array($this, 'pushURLArgsTagInput'), 'safaripush', 'safaripush-webservice');
 	    add_settings_field('safaripush-auth-tag', __( 'Web Service Push Authentication Tag', 'safari-push' ), array($this, 'pushAuthTagInput'), 'safaripush', 'safaripush-webservice');
 
+	    add_settings_section('safaripush-notifications', __( 'Notification Settings', 'safari-push' ), array($this, 'initNotificationSettings'), 'safaripush');
+	    add_settings_field('safaripush-notification-title', __( 'Notification Title', 'safari-push' ), array($this, 'notificationTitleInput'), 'safaripush', 'safaripush-notifications');
+	    add_settings_field('safaripush-notification-label', __( 'Notification Button Label', 'safari-push' ), array($this, 'notificationLabelInput'), 'safaripush', 'safaripush-notifications');
+
 	    add_settings_section('safaripush-shortcode', __( 'Shortcode Settings', 'safari-push' ), array($this, 'initShortcodeSettings'), 'safaripush');
 	    add_settings_field('safaripush-shortcode-default-msg', __( 'Default message', 'safari-push' ), array($this, 'shortcodeDefaultmsgInput'), 'safaripush', 'safaripush-shortcode');
 	    add_settings_field('safaripush-shortcode-unsupported-msg', __( 'Unsupported system message', 'safari-push' ), array($this, 'shortcodeUnsupportedmsgInput'), 'safaripush', 'safaripush-shortcode');
@@ -114,6 +123,8 @@ class SafariPush {
 	    register_setting('safaripush', 'safaripush_actiontag');
 	    register_setting('safaripush', 'safaripush_urlargstag');
 	    register_setting('safaripush', 'safaripush_authtag');
+	    register_setting('safaripush', 'safaripush_pushtitle');
+	    register_setting('safaripush', 'safaripush_pushlabel');
 	    register_setting('safaripush', 'safaripush_defaultmsg');
 	    register_setting('safaripush', 'safaripush_unsupportedmsg');
 	    register_setting('safaripush', 'safaripush_errormsg');
@@ -198,6 +209,10 @@ class SafariPush {
 
     }
 
+    function initNotificationSettings() {
+
+    }
+
     function initShortcodeSettings() {
 
     }
@@ -228,6 +243,12 @@ class SafariPush {
     }
     function pushAuthTagInput(){
     	self::text_input('safaripush_authtag', __( 'Endpoint tag for push notification authentication, e.g. auth', 'safari-push' ) );
+    }
+    function notificationTitleInput(){
+    	self::text_input('safaripush_pushtitle', __( 'Title for notifications displayed, e.g. New Post', 'safari-push' ) );
+    }
+    function notificationLabelInput(){
+    	self::text_input('safaripush_pushlabel', __( 'Button label for notifications displayed, e.g. View', 'safari-push' ) );
     }
     function shortcodeDefaultmsgInput(){
     	self::text_area('safaripush_defaultmsg', __( 'Default HTML to display in Shortcode', 'safari-push' ) );
@@ -268,9 +289,9 @@ class SafariPush {
 	    	$serviceURL = get_option('safaripush_webserviceurl');
 	    	$endpoint = get_option('safaripush_pushendpoint');
 	    	$auth = get_option('safaripush_authcode');
-	    	$title = "New post published";
+	    	$title = get_option('safaripush_pushtitle');
 	    	$body = $post->post_title;
-	    	$action = "View";
+	    	$action = get_option('safaripush_pushlabel');;
 	    	$url = parse_url( get_permalink( $post->id ) );
 	    	$urlargs = ltrim($url["path"],'/');
 	    	if(isset($url["query"])) $urlargs.="?".$url["query"];

@@ -1,6 +1,6 @@
 === Safari Push ===
 Tags: safari, push notifications, mac, os x, mavericks
-Stable tag: 0.6.1
+Stable tag: 0.6.2
 Tested up to: 3.7.1
 
 A Safari Push Plugin for Wordpress
@@ -80,6 +80,9 @@ I have been trying to get this to work with Pushwoosh. Unfortunately there are a
 Not right now, maybe never. Depends if this is something that a lot of people would want.
 
 == Changelog ==
+= 0.6.2 =
+* Notification title and button text can now be changed in settings
+
 = 0.6.1 =
 * Fixed an issue that was generating a PHP warning
 * Added some documentation and FAQ to the plugin page
