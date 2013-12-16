@@ -3,13 +3,16 @@
 
 jQuery( document ).ready(function() {
 	//console.log(SafariPushParams);
+	var ua = window.navigator.userAgent,
+		safari = ua.indexOf ( "Safari" ),
+		version = ua.substring(0,safari).substring(ua.substring(0,safari).lastIndexOf("/")+1);
 	if(SafariPushParams.websitePushID===null) {
 		console.log("Website Push ID is missing");
 		SafariPushParams.status = "error";
 	} else if(SafariPushParams.webServiceURL===null) {
 		console.log("Web Service URL is missing");
 		SafariPushParams.status = "error";
-	} else if(window.navigator.userAgent.indexOf('7.0 Safari') > -1) {
+	} else if(safari > 0 && parseInt(version, 10) >=7) {
 		surrealroad_safaripush_checkPermission();
 	} else {
 		// unsupported browser
