@@ -13,7 +13,7 @@ jQuery( document ).ready(function() {
 	} else if(SafariPushParams.webServiceURL===null) {
 		console.log("Web Service URL is missing");
 		SafariPushParams.status = "error";
-	} else if(!chrome && safari > 0 && parseInt(version, 10) >=7) {
+	} else if(chrome ==-1 && safari > 0 && parseInt(version, 10) >=7) {
 		surrealroad_safaripush_checkPermission();
 	} else {
 		// unsupported browser
