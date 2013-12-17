@@ -5,6 +5,7 @@ jQuery( document ).ready(function() {
 	//console.log(SafariPushParams);
 	var ua = window.navigator.userAgent,
 		safari = ua.indexOf ( "Safari" ),
+		chrome = ua.indexOf ( "Chrome" ),
 		version = ua.substring(0,safari).substring(ua.substring(0,safari).lastIndexOf("/")+1);
 	if(SafariPushParams.websitePushID===null) {
 		console.log("Website Push ID is missing");
@@ -12,7 +13,7 @@ jQuery( document ).ready(function() {
 	} else if(SafariPushParams.webServiceURL===null) {
 		console.log("Web Service URL is missing");
 		SafariPushParams.status = "error";
-	} else if(safari > 0 && parseInt(version, 10) >=7) {
+	} else if(!chrome && safari > 0 && parseInt(version, 10) >=7) {
 		surrealroad_safaripush_checkPermission();
 	} else {
 		// unsupported browser
