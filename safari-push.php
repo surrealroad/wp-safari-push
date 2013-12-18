@@ -172,6 +172,9 @@ class SafariPush {
 	    add_options_page( 'Safari Push Notifications', 'Safari Push', 'manage_options', 'safaripush', array ( $this, 'optionsPage' ));
 	}
 	function optionsPage() {
+		if ( !current_user_can( 'manage_options' ) )  {
+			wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
+		}
 		?>
     <div class="wrap">
     	<?php screen_icon(); ?>
