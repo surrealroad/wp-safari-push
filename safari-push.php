@@ -337,7 +337,7 @@ class SafariPush {
 	      $value = '';
 	    }
 	    ?>
-	<textarea cols=100 rows=6 id='<?php echo $option?>' name='<?php echo $option?>'><?php echo esc_attr( $value ); ?></textarea><br><?php echo $description ?>
+	<textarea cols=100 rows=6 id='<?php echo $option?>' name='<?php echo $option?>'><?php echo esc_textarea( $value ); ?></textarea><br><?php echo $description ?>
 	    <?php
 	}
 
