@@ -210,7 +210,16 @@ class SafariPush {
         jQuery(document).ready(function($) {
         	$.post("<?php echo get_option('safaripush_webserviceurl').get_option('safaripush_listendpoint'); ?>?<?php echo get_option('safaripush_authtag'); ?>=<?php echo get_option('safaripush_authcode'); ?>", function(data) {
 				if(data) {
-					var html = '<strong>'+data.length+' <?php _e('devices registered'); ?></strong>';
+					var html = '<strong>'+data.length+' <?php _e('devices subscribed via push'); ?></strong>',
+						registeredUsers = new Array;
+
+					$.each(data, function(i, device) {
+						if(device.userid>0) registeredUsers.push(device.userid);
+					});
+
+					if(registeredUsers.length>0) {
+						html += ' (' + registeredUsers.length + ' <?php _e('registered users)', "safari-push"); ?>';
+					}
 				} else {
 					var html = '<?php _e('Error retrieving data from push service', "safari-push"); ?>';
 				}
