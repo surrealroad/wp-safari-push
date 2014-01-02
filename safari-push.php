@@ -44,6 +44,7 @@ class SafariPush {
 		add_option("safaripush_webserviceurl", "");
 		add_option("safaripush_websitepushid", "");
 		add_option("safaripush_pushendpoint", "/".self::$apiversion."/push");
+		add_option("safaripush_listendpoint", "/".self::$apiversion."/list");
 		add_option("safaripush_authcode", "");
 		add_option("safaripush_titletag", "title");
 		add_option("safaripush_bodytag", "body");
@@ -66,6 +67,7 @@ class SafariPush {
 		delete_option('safaripush_authcode');
 		delete_option('safaripush_websitepushid');
 		delete_option('safaripush_pushendpoint');
+		delete_option('safaripush_listendpoint');
 		delete_option('safaripush_titletag');
 		delete_option('safaripush_bodytag');
 		delete_option('safaripush_actiontag');
@@ -94,6 +96,7 @@ class SafariPush {
 	    add_settings_field('safaripush-web-service-url', __( 'Web Service URL', 'safari-push' ), array($this, 'webServiceURLInput'), 'safaripush', 'safaripush-webservice');
 	    add_settings_field('safaripush-website-push-id', __( 'Website Push ID', 'safari-push' ), array($this, 'websitePushIDInput'), 'safaripush', 'safaripush-webservice');
 	    add_settings_field('safaripush-push-endpoint', __( 'Web Service Push Endpoint', 'safari-push' ), array($this, 'pushEndpointInput'), 'safaripush', 'safaripush-webservice');
+	    add_settings_field('safaripush-list-endpoint', __( 'Web Service List Endpoint', 'safari-push' ), array($this, 'listEndpointInput'), 'safaripush', 'safaripush-webservice');
    	    add_settings_field('safaripush-auth-code', __( 'Web Service Authentication Code', 'safari-push' ), array($this, 'webServiceAuthInput'), 'safaripush', 'safaripush-webservice');
 	    add_settings_field('safaripush-title-tag', __( 'Web Service Push Title Tag', 'safari-push' ), array($this, 'pushTitleTagInput'), 'safaripush', 'safaripush-webservice');
 	    add_settings_field('safaripush-body-tag', __( 'Web Service Push Body Tag', 'safari-push' ), array($this, 'pushBodyTagInput'), 'safaripush', 'safaripush-webservice');
@@ -117,6 +120,7 @@ class SafariPush {
 	    register_setting('safaripush', 'safaripush_webserviceurl');
 	    register_setting('safaripush', 'safaripush_websitepushid');
 	    register_setting('safaripush', 'safaripush_pushendpoint');
+	    register_setting('safaripush', 'safaripush_listendpoint');
 	    register_setting('safaripush', 'safaripush_authcode');
 	    register_setting('safaripush', 'safaripush_titletag');
 	    register_setting('safaripush', 'safaripush_bodytag');
@@ -200,6 +204,23 @@ class SafariPush {
         <input type="hidden" name="<?php echo get_option('safaripush_actiontag'); ?>" value="View" />
         <?php submit_button("Push", "small"); ?>
         </form>
+        <h2><?php _e( 'Push Subscribers', 'safari-push' ) ?></h2>
+        <div id="safari-push-subscribers"><?php _e( 'Retrieving information&hellip;', 'safari-push' ) ?></div>
+        <script type="text/javascript">
+        jQuery(document).ready(function($) {
+        	$.post("<?php echo get_option('safaripush_webserviceurl').get_option('safaripush_listendpoint'); ?>?<?php echo get_option('safaripush_authtag'); ?>=<?php echo get_option('safaripush_authcode'); ?>", function(data) {
+				if(data) {
+					var html = '<strong>'+data.length+' <?php _e('devices registered'); ?></strong>';
+				} else {
+					var html = '<?php _e('Error retrieving data from push service', "safari-push"); ?>';
+				}
+				$("#safari-push-subscribers").html(html);
+			}, "json").fail(function() {
+					var html = '<?php _e('Error retrieving data from push service', "safari-push"); ?>';
+					$("#safari-push-subscribers").html(html);
+			});
+        });
+        </script>
         <hr/>
         <p><a href="https://developer.apple.com/notifications/safari-push-notifications/"><?php _e( 'More information on Safari Push Notifications', 'safari-push' ) ?></a></p>
         <p><?php _e( 'Safari Push Notification Plugin for Wordpress by', 'safari-push' ) ?> <a href="http://www.surrealroad.com">Surreal Road</a>. <?php echo self::surrealTagline(); ?>.</p>
@@ -228,6 +249,9 @@ class SafariPush {
     }
     function pushEndpointInput(){
     	self::text_input('safaripush_pushendpoint', __( 'Endpoint for your web service to receive new notifications, e.g. /v1/push', 'safari-push' ) );
+    }
+    function listEndpointInput(){
+    	self::text_input('safaripush_listendpoint', __( 'Endpoint for your web service to list registered devices, e.g. /v1/list', 'safari-push' ) );
     }
     function webServiceAuthInput(){
     	self::text_input('safaripush_authcode', __( 'Authentication code for your web service', 'safari-push' ) );
