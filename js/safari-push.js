@@ -39,7 +39,7 @@ function surrealroad_safaripush_checkPermission() {
 }
 
 function surrealroad_safaripush_requestPermission() {
-	window.safari.pushNotification.requestPermission(SafariPushParams.webServiceURL, SafariPushParams.websitePushID, null, surrealroad_safaripush_requestPermissionCallback);
+	window.safari.pushNotification.requestPermission(SafariPushParams.webServiceURL, SafariPushParams.websitePushID, {"id": SafariPushParams.userID}, surrealroad_safaripush_requestPermissionCallback);
 }
 
 function surrealroad_safaripush_requestPermissionCallback(permission) {

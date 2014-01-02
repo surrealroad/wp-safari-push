@@ -145,7 +145,7 @@ class SafariPush {
 		// build settings to use in script http://ottopress.com/2010/passing-parameters-from-php-to-javascripts-in-plugins/
 		$params = array(
 			'token' => "",
-			'id' => "",
+			'userID' => get_current_user_id(),
 			'webServiceURL' => get_option('safaripush_webserviceurl'),
 			'websitePushID' => get_option('safaripush_websitepushid'),
 			'userInfo' => "",
