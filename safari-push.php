@@ -89,6 +89,9 @@ class SafariPush {
 
 		add_action('wp_enqueue_scripts', array($this, 'enqueuescripts'));
 		add_action('transition_post_status', array($this, 'notifyPost'), 10, 3);
+
+		$plugin = plugin_basename(__FILE__);
+		add_filter("plugin_action_links_$plugin", array($this, 'settings_link') );
 	}
 
 	public function admin_init() {
@@ -168,6 +171,13 @@ class SafariPush {
 
 	function renderSafariPushShortcode() {
 	   return '<div class="safari-push-info"></div>';
+	}
+
+	// add settings link
+	static function settings_link($links) {
+		$settings_link = '<a href="options-general.php?page=onebox">Settings</a>';
+		array_unshift($links, $settings_link);
+		return $links;
 	}
 
 	// add admin options page

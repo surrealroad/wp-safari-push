@@ -83,6 +83,7 @@ Not right now, maybe never. Depends if this is something that a lot of people wo
 = 0.x =
 * Security improvements
 * A count of current subscribers is now shown on the options page (this will require you to update your push service)
+* Added link to settings from plugins page
 
 = 0.6.5 =
 * Minified Javascript, corrected a regression that broke Safari detection
