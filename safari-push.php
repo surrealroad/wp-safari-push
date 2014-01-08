@@ -205,7 +205,7 @@ class SafariPush {
         <tr valign="top"><th scope="row"><?php _e( 'Notification Title', 'safari-push' ) ?></th>
         <td><input type="text" name="<?php echo get_option('safaripush_titletag'); ?>" value="" /></td>
         </tr>
-        <tr valign="top"><th scope="row"><?php _e( 'Notification Body', 'safari-push' ) ?></th>
+        <tr valign="top"><th scope="row"><?php _e( 'Notification Body', 'safari-push' ); ?></th>
         <td><input type="text" name="<?php echo get_option('safaripush_bodytag'); ?>" value="" /></td>
         </tr>
         </tbody></table>
@@ -215,12 +215,44 @@ class SafariPush {
         <?php submit_button("Push", "small"); ?>
         </form>
         <h2><?php _e( 'Push Subscribers', 'safari-push' ) ?></h2>
-        <div id="safari-push-subscribers"><?php _e( 'Retrieving information&hellip;', 'safari-push' ) ?></div>
+        <?php if($_GET['show_users']) { //must use a query var because we are fetching data from another server which could hang the page; for some reason get_query_var won't work ?>
+			<table class="widefat">
+			<thead>
+			<tr>
+			<th><?php _e( 'Username', 'safari-push' );?></th>
+			<th><?php _e( 'Device Token', 'safari-push' );?></th>
+			</tr>
+			</thead>
+			<tfoot>
+			<tr>
+			<th><?php _e( 'Username', 'safari-push' );?></th>
+			<th><?php _e( 'Device Token', 'safari-push' );?></th>
+			</tr>
+			</tfoot>
+			<tbody>
+			<?php
+			$jsonurl = get_option('safaripush_webserviceurl').get_option('safaripush_listendpoint')."?".get_option('safaripush_authtag')."=".get_option('safaripush_authcode');
+			$json = file_get_contents($jsonurl,0,null,null);
+			$devices = json_decode($json, true);
+			$regCount = 0;
+
+			foreach ( $devices as $device ) {
+			    if($device['userid']>0) {
+			    	$regCount++;
+			    	$userdata = get_userdata($device['userid']);
+			    	echo '<tr><td><a href="'.get_edit_user_link($device['userid']).'">'.esc_attr( $userdata->user_nicename ).'</a></td><td>'.$device['token'].'</td></tr>';
+			    }
+			} ?>
+			</tbody>
+			</table>
+			<p><?php echo __('There are ', "safari-push").(count($devices) - $regCount).__(' additional subscribed devices belonging to unregistered users', "safari-push"); ?></p>
+        <?php } else { ?>
+        <div id="safari-push-subscribers"><?php _e( 'Retrieving information', 'safari-push' ) ?>&hellip;</div>
         <script type="text/javascript">
         jQuery(document).ready(function($) {
         	$.post("<?php echo get_option('safaripush_webserviceurl').get_option('safaripush_listendpoint'); ?>?<?php echo get_option('safaripush_authtag'); ?>=<?php echo get_option('safaripush_authcode'); ?>", function(data) {
 				if(data) {
-					var html = '<strong>'+data.length+' <?php _e('devices subscribed via push'); ?></strong>',
+					var html = '<p><strong>'+data.length+' <?php _e('devices subscribed via push'); ?></strong>',
 						registeredUsers = new Array;
 
 					$.each(data, function(i, device) {
@@ -228,18 +260,21 @@ class SafariPush {
 					});
 
 					if(registeredUsers.length>0) {
-						html += ' (' + registeredUsers.length + ' <?php _e('registered users)', "safari-push"); ?>';
+						html += ' (' + registeredUsers.length + ' <?php _e('registered user(s)', "safari-push"); ?>)' ;
+						html += ' </p><p><a href="<?php echo add_query_arg( 'show_users', true ); ?>"><?php _e('Show registered users', "safari-push"); ?></a>';
 					}
+					html += '</p>';
 				} else {
-					var html = '<?php _e('Error retrieving data from push service', "safari-push"); ?>';
+					var html = '<p><?php _e('Error retrieving data from push service', "safari-push"); ?></p>';
 				}
 				$("#safari-push-subscribers").html(html);
 			}, "json").fail(function() {
-					var html = '<?php _e('Error retrieving data from push service', "safari-push"); ?>';
+					var html = '<p><?php _e('Error retrieving data from push service', "safari-push"); ?></p>';
 					$("#safari-push-subscribers").html(html);
 			});
         });
         </script>
+        <?php } ?>
         <hr/>
         <p><a href="https://developer.apple.com/notifications/safari-push-notifications/"><?php _e( 'More information on Safari Push Notifications', 'safari-push' ) ?></a></p>
         <p><?php _e( 'Safari Push Notification Plugin for Wordpress by', 'safari-push' ) ?> <a href="http://www.surrealroad.com">Surreal Road</a>. <?php echo self::surrealTagline(); ?>.</p>

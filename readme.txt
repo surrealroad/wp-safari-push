@@ -82,7 +82,7 @@ Not right now, maybe never. Depends if this is something that a lot of people wo
 == Changelog ==
 = 0.x =
 * Security improvements
-* A count of current subscribers is now shown on the options page (this will require you to update your push service)
+* A count of current subscribers is now shown on the options page, as well as a link to show all registered users that have subscribed via push (this will require you to update your push service)
 * Added link to settings from plugins page
 
 = 0.6.5 =
