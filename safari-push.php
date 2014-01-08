@@ -199,21 +199,64 @@ class SafariPush {
             <?php submit_button(); ?>
         </form>
         <h2><?php _e( 'Send a push notification', 'safari-push' ) ?></h2>
-        <form action="<?php echo get_option('safaripush_webserviceurl').get_option('safaripush_pushendpoint'); ?>" method="POST" ?>
-        <?php _e( 'Use the form below to send a notification (note that this will be sent to all currently subscribed recipients!)', 'safari-push' ) ?>
+        <form id="safaripush-test-form" action="" method="POST" ?>
+        <?php _e( 'Use the form below to send a notification', 'safari-push' ) ?>
         <table class="form-table"><tbody>
         <tr valign="top"><th scope="row"><?php _e( 'Notification Title', 'safari-push' ) ?></th>
-        <td><input type="text" name="<?php echo get_option('safaripush_titletag'); ?>" value="" /></td>
+        <td><input type="text" id="safaripush-test-title" name="<?php echo get_option('safaripush_titletag'); ?>" value="" /></td>
         </tr>
         <tr valign="top"><th scope="row"><?php _e( 'Notification Body', 'safari-push' ); ?></th>
-        <td><input type="text" name="<?php echo get_option('safaripush_bodytag'); ?>" value="" /></td>
+        <td><input type="text" id="safaripush-test-body" name="<?php echo get_option('safaripush_bodytag'); ?>" value="" /></td>
+        </tr>
+        <tr valign="top"><th scope="row"><?php _e( 'Device token', 'safari-push' ); ?></th>
+        <td><input type="text" id="safaripush-test-devicetoken" name="devicetoken" value="" /><br/><?php _e('Specify the device token to send the notification to, or leave blank to notify all devices (defaults to your current device if available).', 'safari-push'); ?></td>
         </tr>
         </tbody></table>
-        <input type="hidden" name="<?php echo get_option('safaripush_authtag'); ?>" value="<?php echo get_option('safaripush_authcode'); ?>" />
-        <input type="hidden" name="<?php echo get_option('safaripush_urlargstag'); ?>" value="" />
-        <input type="hidden" name="<?php echo get_option('safaripush_actiontag'); ?>" value="View" />
+        <input type="hidden" id="safaripush-test-auth" name="<?php echo get_option('safaripush_authtag'); ?>" value="<?php echo get_option('safaripush_authcode'); ?>" />
+        <input type="hidden" id="safaripush-test-urlargs" name="<?php echo get_option('safaripush_urlargstag'); ?>" value="" />
+        <input type="hidden" id="safaripush-test-action" name="<?php echo get_option('safaripush_actiontag'); ?>" value="View" />
         <?php submit_button("Push", "small"); ?>
         </form>
+        <div id="test-result"></div>
+        <script type="text/javascript">
+        jQuery(document).ready(function($){
+        	var pResult = window.safari.pushNotification.permission($("#safaripush_websitepushid").val());
+			if(pResult.permission === 'granted') {
+				$("#safaripush-test-devicetoken").val(pResult.deviceToken);
+			}
+
+			$("#safaripush-test-form").submit(function(event){
+	            event.preventDefault();
+	            var html ="",
+	            	url = $("#safaripush_webserviceurl").val()+$("#safaripush_pushendpoint").val(),
+	            	data = $(this).serialize();
+	            if($("#safaripush-test-devicetoken").val()) url += "/"+$("#safaripush-test-devicetoken").val();
+
+	            if(
+	            	!$("#safaripush_webserviceurl").val()
+	            	|| !$("#safaripush_pushendpoint").val()
+	            	|| !$("#safaripush_titletag").val()
+	            	|| !$("#safaripush_bodytag").val()
+	            	|| !$("#safaripush_authtag").val()
+	            	|| !$("#safaripush_urlargstag").val()
+	            	|| !$("#safaripush_actiontag").val()
+	            	|| !$("#safaripush-test-title").val()
+	            	|| !$("#safaripush-test-body").val()
+	            	|| !$("#safaripush-test-auth").val()
+	            	|| !$("#safaripush-test-action").val()
+	            ) {
+		            html = '<div class="error"><p><?php _e('A required field is not filled in', "safari-push"); ?></p></div>';
+		            $("#test-result").html(html);
+	            } else {
+	            	var jqxhr = $.post(url, data, function() {
+					  html = '<div class="updated"><p><?php _e('Notification sent', "safari-push"); ?></p></div>';
+					})
+					.fail(function() { html = '<div class="error"><p><?php _e('Error communicating with push service', "safari-push"); ?></p></div>'; })
+					.always(function() { $("#test-result").html(html); });
+	            }
+			});
+        });
+        </script>
         <h2><?php _e( 'Push Subscribers', 'safari-push' ) ?></h2>
         <?php if($_GET['show_users']) { //must use a query var because we are fetching data from another server which could hang the page; for some reason get_query_var won't work ?>
 			<table class="widefat">

@@ -5,7 +5,7 @@ A Safari Push Plugin for Wordpress
 
 What does this plugin do?
 --
-This plugin lets you prompt users to allow Safari Push notifications from your Wordpress site, and then send out Safari Push notifications to every user each time you publish a new post from Wordpress.
+This plugin lets you prompt users to allow Safari Push notifications from your Wordpress site, and then send out Safari Push notifications to every user each time you publish a new post from Wordpress. There's also an option to send notifications directly from the plugin's settings page.
 Additionally, it lets you use a shortcode `[safari-push]` anywhere you like that will provide feedback to visitors on their notification status.
 This plugin is intentionally kept simple, feel free to fork the source and modify it to suit your needs.
 
@@ -33,7 +33,6 @@ Sure, go to http://www.controlcommandescape.com/push/ (you'll probably want to o
 TODO:
 - Pushwoosh integration (pending response from PushWoosh support)
 - Comply with WordPress security guidelines
-- Better option for test notification
 
 Additional credits
 - Localisation and French-language version by Rémy Perona (http://remyperona.fr/)
