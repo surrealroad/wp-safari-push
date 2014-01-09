@@ -50,7 +50,7 @@ class SafariPush {
 		add_option("safaripush_bodytag", "body");
 		add_option("safaripush_actiontag", "button");
 		add_option("safaripush_actionurlargstag", "urlargs");
-		add_option("safaripush_authtag", "");
+		add_option("safaripush_authtag", "auth");
 		add_option("safaripush_pushtitle",  __( 'New post published', 'safari-push' ));
 		add_option("safaripush_pushlabel",  __( 'View', 'safari-push' ));
 		add_option("safaripush_defaultmsg", '<div class="alert alert-info"><p>' . __( 'To enable push notifications for this site, click "Allow" when Safari asks you.', 'safari-push' ) . '</p></div>');
