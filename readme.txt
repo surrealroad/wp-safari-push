@@ -1,6 +1,6 @@
 === Safari Push ===
 Tags: safari, push notifications, mac, os x, mavericks
-Stable tag: 0.7
+Stable tag: 0.7.1
 Tested up to: 3.8
 
 A Safari Push Plugin for Wordpress
@@ -79,7 +79,7 @@ I have been trying to get this to work with Pushwoosh. Unfortunately there are a
 Not right now, maybe never. Depends if this is something that a lot of people would want.
 
 == Changelog ==
-= 0.x =
+= 0.7.1 =
 * Added missing default for "auth tag" field
 * Fixed permalinks not being pushed (thanks MuViMoTV!)
 
