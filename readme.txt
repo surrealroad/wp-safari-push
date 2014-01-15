@@ -81,6 +81,7 @@ Not right now, maybe never. Depends if this is something that a lot of people wo
 == Changelog ==
 = 0.x =
 * Added missing default for "auth tag" field
+* Fixed permalinks not being pushed (thanks MuViMoTV!)
 
 = 0.7 =
 * Security improvements

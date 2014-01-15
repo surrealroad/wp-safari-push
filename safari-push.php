@@ -416,7 +416,7 @@ class SafariPush {
 	    	$title = get_option('safaripush_pushtitle');
 	    	$body = $post->post_title;
 	    	$action = get_option('safaripush_pushlabel');;
-	    	$url = parse_url( get_permalink( $post->id ) );
+	    	$url = parse_url( get_permalink( $post->ID ) );
 	    	$urlargs = ltrim($url["path"],'/');
 	    	if(isset($url["query"])) $urlargs.="?".$url["query"];
 	    	$titleTag = get_option('safaripush_titletag');
