@@ -220,9 +220,11 @@ class SafariPush {
         <div id="test-result"></div>
         <script type="text/javascript">
         jQuery(document).ready(function($){
-        	var pResult = window.safari.pushNotification.permission($("#safaripush_websitepushid").val());
-			if(pResult.permission === 'granted') {
-				$("#safaripush-test-devicetoken").val(pResult.deviceToken);
+        	if(window.safari) {
+	        	var pResult = window.safari.pushNotification.permission($("#safaripush_websitepushid").val());
+				if(pResult.permission === 'granted') {
+					$("#safaripush-test-devicetoken").val(pResult.deviceToken);
+				}
 			}
 
 			$("#safaripush-test-form").submit(function(event){
