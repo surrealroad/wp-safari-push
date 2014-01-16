@@ -51,6 +51,8 @@ Additional credits
 6. (Optional) Fill in the form at the bottom of the settings page to send a test psuh notification
 7. (Optional) Edit the HTML displayed for the shortcode in the settings page
 
+Note that your theme must include `wp_footer()`
+
 == Frequently Asked Questions ==
 
 = Where can I get information on how to get the push service working? =
@@ -81,6 +83,7 @@ Not right now, maybe never. Depends if this is something that a lot of people wo
 == Changelog ==
 = 0.x =
 * Fixed an issue that would prevent registered count not to display in a non-Safari browser
+* Javascript is now called from footer (thanks Djib's)
 
 = 0.7.1 =
 * Added missing default for "auth tag" field

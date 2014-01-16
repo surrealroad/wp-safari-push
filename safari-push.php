@@ -146,7 +146,9 @@ class SafariPush {
 		wp_enqueue_script(
 			'safaripush',
 			plugins_url( '/js/safari-push.min.js' , __FILE__ ),
-			array( 'jquery' )
+			array( 'jquery' ),
+			$this->version,
+			true
 		);
 
 		// build settings to use in script http://ottopress.com/2010/passing-parameters-from-php-to-javascripts-in-plugins/
