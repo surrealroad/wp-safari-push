@@ -57,7 +57,7 @@ class SafariPush {
 		add_option("safaripush_unsupportedmsg", '<div class="alert alert-warning"><p>' . __( 'To enable or modify push notifications for this site, use Safari 7.0 or newer.', 'safari-push' ) . '</p></div>');
 		add_option("safaripush_errormsg", '<div class="alert alert-danger"><p>' . __( 'Something went wrong communicating with the push notification server, please try again later.', 'safari-push' ) . '</p></div>');
 		add_option("safaripush_grantedmsg", '<div class="alert alert-success"><p>' . __( 'Push notifications are enabled for this site.', 'safari-push' ) . '</p></div>');
-		add_option("safaripush_deniedmsg", '<div class="alert alert-warning"><p>' . __( 'You have opted not to receive push notifications from us.', 'safari-push' ) . '</p><button class="btn btn-default btn-small" onClick="surrealroad_safaripush_requestPermission();">' . __( 'Enable push notifications', 'safari-push' ) . '</button></div>');
+		add_option("safaripush_deniedmsg", '<div class="alert alert-warning"><p>' . __( 'You have opted not to receive push notifications from us. If you changed your mind, open Safari\'s preferences, and change the permission in the notifications tab.', 'safari-push' ) . '</p></div>');
 	}
 
 	static function uninstall(){
@@ -391,7 +391,7 @@ class SafariPush {
     	self::text_area('safaripush_grantedmsg', __( 'HTML to display in Shortcode when notifications have been granted', 'safari-push' ) );
     }
     function shortcodeDeniedmsgInput(){
-    	self::text_area('safaripush_deniedmsg', __('HTML to display in Shortcode when notifications have been denied (use onClick="surrealroad_safaripush_requestPermission();" on a button to allow the user to request permission again)', 'safari-push') );
+    	self::text_area('safaripush_deniedmsg', __('HTML to display in Shortcode when notifications have been denied', 'safari-push') );
     }
 
     // send notification
