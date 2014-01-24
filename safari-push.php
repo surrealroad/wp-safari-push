@@ -29,6 +29,10 @@ class SafariPush {
 		'webServiceURL' => ""
 	);
 
+	public function getVersion() {
+		return $this::version;
+	}
+
 	public function __construct() {
 		register_activation_hook(__FILE__,array(__CLASS__, 'install' ));
 		register_uninstall_hook(__FILE__,array( __CLASS__, 'uninstall'));
@@ -147,7 +151,7 @@ class SafariPush {
 			'safaripush',
 			plugins_url( '/js/safari-push.min.js' , __FILE__ ),
 			array( 'jquery' ),
-			$this->version,
+			'',
 			true
 		);
 
