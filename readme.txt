@@ -84,6 +84,7 @@ Not right now, maybe never. Depends if this is something that a lot of people wo
 = 0.x =
 * Fixed an issue that would prevent registered count not to display in a non-Safari browser
 * Javascript is now called from footer (thanks Djib's)
+* Fix for Javascript crash on Mobile Safari browsers (thanks mart03)
 
 = 0.7.1 =
 * Added missing default for "auth tag" field
