@@ -424,7 +424,7 @@ class SafariPush {
 	    	$title = get_option('safaripush_pushtitle');
 	    	$body = $post->post_title;
 	    	$action = get_option('safaripush_pushlabel');;
-	    	$url = parse_url( wp_get_shortlink( $post->ID ) );
+	    	$url = parse_url( home_url('?p=' . $post->ID ) );
 	    	$urlargs = ltrim($url["path"],'/');
 	    	if(isset($url["query"])) $urlargs.="?".$url["query"];
 	    	$titleTag = get_option('safaripush_titletag');
