@@ -81,6 +81,9 @@ I have been trying to get this to work with Pushwoosh. Unfortunately there are a
 Not right now, maybe never. Depends if this is something that a lot of people would want.
 
 == Changelog ==
+= 0.x =
+* Use short link instead of permalink to reduce APNS packet size (thanks Djib's)
+
 = 0.7.2 =
 * Fixed an issue that would prevent registered count not to display in a non-Safari browser
 * Javascript is now called from footer (thanks Djib's)
