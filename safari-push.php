@@ -62,6 +62,7 @@ class SafariPush {
 		add_option("safaripush_errormsg", '<div class="alert alert-danger"><p>' . __( 'Something went wrong communicating with the push notification server, please try again later.', 'safari-push' ) . '</p></div>');
 		add_option("safaripush_grantedmsg", '<div class="alert alert-success"><p>' . __( 'Push notifications are enabled for this site.', 'safari-push' ) . '</p></div>');
 		add_option("safaripush_deniedmsg", '<div class="alert alert-warning"><p>' . __( 'You have opted not to receive push notifications from us. If you changed your mind, open Safari\'s preferences, and change the permission in the notifications tab.', 'safari-push' ) . '</p></div>');
+		add_option("safaripush_enqueuefooter", false);
 	}
 
 	static function uninstall(){
@@ -84,6 +85,7 @@ class SafariPush {
 		delete_option('safaripush_errormsg');
 		delete_option('safaripush_grantedmsg');
 		delete_option('safaripush_deniedmsg');
+		delete_option('safaripush_enqueuefooter');
 	}
 
 
@@ -121,6 +123,9 @@ class SafariPush {
 	    add_settings_field('safaripush-shortcode-error-msg', __( 'Error message', 'safari-push' ), array($this, 'shortcodeErrormsgInput'), 'safaripush', 'safaripush-shortcode');
 	    add_settings_field('safaripush-shortcode-granted-msg', __( 'Permission granted message', 'safari-push' ), array($this, 'shortcodeGrantedmsgInput'), 'safaripush', 'safaripush-shortcode');
 	    add_settings_field('safaripush-shortcode-denied-msg', __( 'Permission denied message', 'safari-push' ), array($this, 'shortcodeDeniedmsgInput'), 'safaripush', 'safaripush-shortcode');
+
+	    add_settings_section('safaripush-behaviour', __( 'Behaviour Settings', 'safari-push' ), array($this, 'initBehaviourSettings'), 'safaripush');
+	    add_settings_field('safaripush-behaviour-enqueuefooter', __( 'Load Javascript in footer', 'safari-push' ), array($this, 'behaviourEnqueuefooterInput'), 'safaripush', 'safaripush-behaviour');
     }
 
     function registerSettings() {
@@ -141,6 +146,7 @@ class SafariPush {
 	    register_setting('safaripush', 'safaripush_errormsg');
 	    register_setting('safaripush', 'safaripush_grantedmsg');
 	    register_setting('safaripush', 'safaripush_deniedmsg');
+	    register_setting('safaripush', 'safaripush_enqueuefooter');
     }
 
 	// Enqueue Javascript
@@ -151,8 +157,8 @@ class SafariPush {
 			'safaripush',
 			plugins_url( '/js/safari-push.min.js' , __FILE__ ),
 			array( 'jquery' ),
-			'',
-			true
+			get_option('safaripush_version'),
+			get_option('safaripush_enqueuefooter')
 		);
 
 		// build settings to use in script http://ottopress.com/2010/passing-parameters-from-php-to-javascripts-in-plugins/
@@ -346,6 +352,10 @@ class SafariPush {
 
     }
 
+	function initBehaviourSettings() {
+
+    }
+
     function webServiceURLInput(){
     	self::text_input('safaripush_webserviceurl', __( 'Base URL to your push web service, e.g. https://mypushservice.com', 'safari-push' ) );
     }
@@ -396,6 +406,9 @@ class SafariPush {
     }
     function shortcodeDeniedmsgInput(){
     	self::text_area('safaripush_deniedmsg', __('HTML to display in Shortcode when notifications have been denied', 'safari-push') );
+    }
+    function behaviourEnqueuefooterInput(){
+    	self::checkbox_input('safaripush_enqueuefooter', __('Load Javascript in footer (requires wp_footer() in your theme)', 'safari-push') );
     }
 
     // send notification

@@ -83,6 +83,7 @@ Not right now, maybe never. Depends if this is something that a lot of people wo
 == Changelog ==
 = 0.x =
 * Use short link instead of permalink to reduce APNS packet size (thanks Djib's)
+* You can specfiy whether to load Javascript in footer or not from the options screen (thanks Djib's)
 
 = 0.7.2 =
 * Fixed an issue that would prevent registered count not to display in a non-Safari browser
