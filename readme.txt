@@ -1,7 +1,7 @@
 === Safari Push ===
 Tags: safari, push notifications, mac, os x, mavericks
-Stable tag: 0.7.2
-Tested up to: 3.8
+Stable tag: 0.7.3
+Tested up to: 3.8.1
 
 A Safari Push Plugin for Wordpress
 
@@ -81,7 +81,7 @@ I have been trying to get this to work with Pushwoosh. Unfortunately there are a
 Not right now, maybe never. Depends if this is something that a lot of people would want.
 
 == Changelog ==
-= 0.x =
+= 0.7.3 =
 * Use short link instead of permalink to reduce APNS packet size (thanks Djib's)
 * You can specfiy whether to load Javascript in footer or not from the options screen (thanks Djib's)
 
