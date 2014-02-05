@@ -49,6 +49,7 @@ class SafariPush {
 		add_option("safaripush_websitepushid", "");
 		add_option("safaripush_pushendpoint", "/".self::$apiversion."/push");
 		add_option("safaripush_listendpoint", "/".self::$apiversion."/list");
+		add_option("safaripush_countendpoint", "/".self::$apiversion."/count");
 		add_option("safaripush_authcode", "");
 		add_option("safaripush_titletag", "title");
 		add_option("safaripush_bodytag", "body");
@@ -73,6 +74,7 @@ class SafariPush {
 		delete_option('safaripush_websitepushid');
 		delete_option('safaripush_pushendpoint');
 		delete_option('safaripush_listendpoint');
+		delete_option('safaripush_countendpoint');
 		delete_option('safaripush_titletag');
 		delete_option('safaripush_bodytag');
 		delete_option('safaripush_actiontag');
@@ -106,6 +108,7 @@ class SafariPush {
 	    add_settings_field('safaripush-website-push-id', __( 'Website Push ID', 'safari-push' ), array($this, 'websitePushIDInput'), 'safaripush', 'safaripush-webservice');
 	    add_settings_field('safaripush-push-endpoint', __( 'Web Service Push Endpoint', 'safari-push' ), array($this, 'pushEndpointInput'), 'safaripush', 'safaripush-webservice');
 	    add_settings_field('safaripush-list-endpoint', __( 'Web Service List Endpoint', 'safari-push' ), array($this, 'listEndpointInput'), 'safaripush', 'safaripush-webservice');
+	    add_settings_field('safaripush-count-endpoint', __( 'Web Service Count Endpoint', 'safari-push' ), array($this, 'countEndpointInput'), 'safaripush', 'safaripush-webservice');
    	    add_settings_field('safaripush-auth-code', __( 'Web Service Authentication Code', 'safari-push' ), array($this, 'webServiceAuthInput'), 'safaripush', 'safaripush-webservice');
 	    add_settings_field('safaripush-title-tag', __( 'Web Service Push Title Tag', 'safari-push' ), array($this, 'pushTitleTagInput'), 'safaripush', 'safaripush-webservice');
 	    add_settings_field('safaripush-body-tag', __( 'Web Service Push Body Tag', 'safari-push' ), array($this, 'pushBodyTagInput'), 'safaripush', 'safaripush-webservice');
@@ -133,6 +136,7 @@ class SafariPush {
 	    register_setting('safaripush', 'safaripush_websitepushid');
 	    register_setting('safaripush', 'safaripush_pushendpoint');
 	    register_setting('safaripush', 'safaripush_listendpoint');
+	    register_setting('safaripush', 'safaripush_countendpoint');
 	    register_setting('safaripush', 'safaripush_authcode');
 	    register_setting('safaripush', 'safaripush_titletag');
 	    register_setting('safaripush', 'safaripush_bodytag');
@@ -167,6 +171,7 @@ class SafariPush {
 			'userID' => get_current_user_id(),
 			'webServiceURL' => get_option('safaripush_webserviceurl'),
 			'websitePushID' => get_option('safaripush_websitepushid'),
+			'countEndpoint' => get_option('safaripush_countendpoint'),
 			'userInfo' => "",
 			'apiVersion' => get_option('safaripush_apiversion'),
 			'defaultMsg' => get_option('safaripush_defaultmsg'),
@@ -179,10 +184,16 @@ class SafariPush {
 	}
 
 
-	// add [safaripush] shortcode
+	// add [safari-push] shortcode
 
 	function renderSafariPushShortcode() {
 	   return '<div class="safari-push-info"></div>';
+	}
+
+	// add [safari-push-count] shortcode
+
+	function renderSafariPushCountShortcode() {
+	   return '<span class="safari-push-count">&hellip;</span>';
 	}
 
 	// add settings link
@@ -332,6 +343,7 @@ class SafariPush {
         });
         </script>
         <?php } ?>
+        <p><?php _e('To display this number somewhere, use the shortcode <code>[safari-push-count]</code>', "safari-push"); ?></p>
         <hr/>
         <p><a href="https://developer.apple.com/notifications/safari-push-notifications/"><?php _e( 'More information on Safari Push Notifications', 'safari-push' ) ?></a></p>
         <p><?php _e( 'Safari Push Notification Plugin for Wordpress by', 'safari-push' ) ?> <a href="http://www.surrealroad.com">Surreal Road</a>. <?php echo self::surrealTagline(); ?>.</p>
@@ -341,7 +353,7 @@ class SafariPush {
 	}
 
     function initWebServiceSettings() {
-
+    	_e('<p>To allow visitors to subscribe to your site via Safari Push Notifications, you need a correctly-configured push service.<br/><small>For a PHP-based service that\'s compatibile with this plugin, see <a href="https://github.com/surrealroad/Safari-Push-Notifications">our reference service on GitHub</a>.</small></p>', "safari-push");
     }
 
     function initNotificationSettings() {
@@ -349,7 +361,7 @@ class SafariPush {
     }
 
     function initShortcodeSettings() {
-
+    	_e('<p>To display feedback to visitors about their push notification status, use the shortcode <code>[safari-push]</code> in combination with the templates below, wherever you\'d like the message to appear.</p>', "safari-push");
     }
 
 	function initBehaviourSettings() {
@@ -367,6 +379,9 @@ class SafariPush {
     }
     function listEndpointInput(){
     	self::text_input('safaripush_listendpoint', __( 'Endpoint for your web service to list registered devices, e.g. /v1/list', 'safari-push' ) );
+    }
+    function countEndpointInput(){
+    	self::text_input('safaripush_countendpoint', __( 'Endpoint for your web service to count registered devices, e.g. /v1/count', 'safari-push' ) );
     }
     function webServiceAuthInput(){
     	self::text_input('safaripush_authcode', __( 'Authentication code for your web service', 'safari-push' ) );
@@ -408,7 +423,7 @@ class SafariPush {
     	self::text_area('safaripush_deniedmsg', __('HTML to display in Shortcode when notifications have been denied', 'safari-push') );
     }
     function behaviourEnqueuefooterInput(){
-    	self::checkbox_input('safaripush_enqueuefooter', __('Load Javascript in footer (requires wp_footer() in your theme)', 'safari-push') );
+    	self::checkbox_input('safaripush_enqueuefooter', __('Load Javascript in footer (requires <code>wp_footer()</code> in your theme)', 'safari-push') );
     }
 
     // send notification
@@ -494,3 +509,4 @@ $safaripush = new SafariPush();
 
 // shortcodes (must be declared outside of class)
 add_shortcode('safari-push', array('SafariPush', 'renderSafariPushShortcode'));
+add_shortcode('safari-push-count', array('SafariPush', 'renderSafariPushCountShortcode'));

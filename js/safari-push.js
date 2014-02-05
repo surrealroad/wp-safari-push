@@ -21,7 +21,7 @@ jQuery( document ).ready(function() {
 		//console.log("Unsupported browser");
 		SafariPushParams.status = "unsupported";
 	}
-	surrealroad_safaripush_rendershortcode(SafariPushParams.status);
+	surrealroad_safaripush_rendershortcodes(SafariPushParams.status);
 });
 
 function surrealroad_safaripush_checkPermission() {
@@ -56,8 +56,9 @@ function surrealroad_safaripush_requestPermissionCallback(permission) {
 }
 
 
-// render [safari-push] shortcode
-function surrealroad_safaripush_rendershortcode(status) {
+// render shortcodes
+function surrealroad_safaripush_rendershortcodes(status) {
+	// [safari-push]
 	var html = "";
 	switch(status) {
 		case 'error' : html = SafariPushParams.errorMsg;
@@ -71,4 +72,13 @@ function surrealroad_safaripush_rendershortcode(status) {
 		default : html = SafariPushParams.defaultMsg;
 	}
 	jQuery(".safari-push-info").html(html);
+	// [safari-push-count]
+	if(jQuery(".safari-push-count").is('*')) {
+		jQuery.ajax(SafariPushParams.webServiceURL + SafariPushParams.countEndpoint)
+		.success(
+			function(pushcount){
+				jQuery(".safari-push-count").html(pushcount);
+			}
+		);
+	}
 }

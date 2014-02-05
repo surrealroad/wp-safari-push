@@ -10,7 +10,7 @@ A Safari Push Plugin for Wordpress
 What does this plugin do?
 --
 This plugin lets you prompt users to allow Safari Push notifications from your Wordpress site, and then send out Safari Push notifications to every user each time you publish a new post from Wordpress. There's also an option to send notifications directly from the plugin's settings page.
-Additionally, it lets you use a shortcode `[safari-push]` anywhere you like that will provide feedback to visitors on their notification status.
+Additionally, it lets you use the shortcode `[safari-push]` anywhere you like that will provide feedback to visitors on their notification status, and the shortcode `[safari-push-count]` to show how many subscribers you have.
 This plugin is intentionally kept simple, feel free to fork the source and modify it to suit your needs.
 
 The source is maintained on GitHub: https://github.com/surrealroad/wp-safari-push
@@ -81,6 +81,9 @@ I have been trying to get this to work with Pushwoosh. Unfortunately there are a
 Not right now, maybe never. Depends if this is something that a lot of people would want.
 
 == Changelog ==
+= 0.x =
+* Added [safari-push-count] shortcode to print count of subscribed devices (this will require you to update your push service)
+
 = 0.7.3 =
 * Use short link instead of permalink to reduce APNS packet size (thanks Djib's)
 * You can specfiy whether to load Javascript in footer or not from the options screen (thanks Djib's)
