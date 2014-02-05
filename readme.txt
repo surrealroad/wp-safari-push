@@ -70,7 +70,7 @@ A common problem is to forget to include the "www." part of the domain in the "a
 
 = When are notifications sent? =
 
-Notifications will be sent whenever a post is published for the first time.
+Notifications will be sent whenever a post is published for the first time. You can select which post types and which categories to enable notifications for.
 
 = What about Pushwoosh support? =
 
@@ -83,6 +83,8 @@ Not right now, maybe never. Depends if this is something that a lot of people wo
 == Changelog ==
 = 0.x =
 * Added [safari-push-count] shortcode to print count of subscribed devices (this will require you to update your push service)
+* Added option to choose which post types to notify for
+* Added option to choose which categories to notify for
 
 = 0.7.3 =
 * Use short link instead of permalink to reduce APNS packet size (thanks Djib's)
