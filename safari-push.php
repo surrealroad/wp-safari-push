@@ -20,7 +20,7 @@ if ( !function_exists( 'add_action' ) ) {
 class SafariPush {
 
 	//Version
-	static $version ='0.8';
+	static $version ='0.8.1';
 	static $apiversion = 'v1';
 
 	//Options and defaults
