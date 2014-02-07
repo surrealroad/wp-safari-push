@@ -1,6 +1,6 @@
 === Safari Push ===
 Tags: safari, push notifications, mac, os x, mavericks
-Stable tag: 0.7.3
+Stable tag: 0.8
 Tested up to: 3.8.1
 
 A Safari Push Plugin for Wordpress
