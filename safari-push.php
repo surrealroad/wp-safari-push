@@ -3,7 +3,7 @@
 Plugin Name: Safari Push Notifications
 Plugin URI: https://github.com/surrealroad/wp-safari-push
 Description: Allows WordPress to publish updates to a push server for Safari browsers
-Version: 0.8
+Version: 0.8.1
 Author: Surreal Road Limited
 Author URI: http://www.surrealroad.com
 Text Domain: safari-push
@@ -538,23 +538,23 @@ class SafariPush {
 	    <?php
 	}
 
-	private function valid_post_type_array($namesOnly = false) {
+	private function valid_post_type_array($defaults = false) {
 		$arr = array();
 		$post_types = get_post_types( array('public'=> true), "objects");
 		foreach ($post_types as $post_type) {
 			if ('attachment' != $post_type->name) {
-				if($namesOnly) $arr[] = $post_type->name;
+				if($defaults) $arr[] = array($post_type->name => 1);
 				else $arr[] = array("name" => $post_type->name, "label" => $post_type->labels->name);
 			}
 		}
 		return $arr;
 	}
 
-	private function valid_category_array($namesOnly = false) {
+	private function valid_category_array($defaults = false) {
 		$arr = array();
 		$categories = get_categories( array('public'=> true), "objects");
 		foreach ($categories as $category) {
-			if($namesOnly) $arr[] = $category->slug;
+			if($defaults) $arr[] = array($category->slug => 1);
 			else $arr[] = array("name" => $category->slug, "label" => $category->name);
 		}
 		return $arr;
