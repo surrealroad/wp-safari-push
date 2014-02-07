@@ -459,10 +459,18 @@ class SafariPush {
 
     function notifyPost($newStatus, $oldStatus, $post) {
     	// only notify new of allowed post types
+    	$post_types = array();
+    	foreach(get_option('safaripush_enabledposttypes') as $key=>$value) {
+	    	if($value) $post_types[] = $key;
+    	}
+    	$categories = array();
+    	foreach(get_option('safaripush_enabledcategories') as $key=>$value) {
+	    	if($value) $categories[] = $key;
+    	}
     	if( 'publish' != $newStatus) return;
     	elseif( 'publish' === $oldStatus) return;
-    	elseif(!in_array(get_post_type($post), get_option('safaripush_enabledposttypes'))) return;
-    	elseif(count(wp_get_post_categories($post->ID)) && !in_category(get_option('safaripush_enabledcategories'), $post)) return;
+    	elseif(!in_array(get_post_type($post), $post_types)) return;
+    	elseif(count(wp_get_post_categories($post->ID)) && !in_category($categories, $post)) return;
     	$serviceURL = get_option('safaripush_webserviceurl');
     	$endpoint = get_option('safaripush_pushendpoint');
     	$auth = get_option('safaripush_authcode');
