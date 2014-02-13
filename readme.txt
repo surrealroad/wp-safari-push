@@ -81,6 +81,9 @@ I have been trying to get this to work with Pushwoosh. Unfortunately there are a
 Not right now, maybe never. Depends if this is something that a lot of people would want.
 
 == Changelog ==
+= 0.x =
+* Allow inclusion of categories with no posts (thanks MuViMoTV)
+
 = 0.8.1 =
 * Include all valid post types and categories by default
 

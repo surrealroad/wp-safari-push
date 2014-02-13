@@ -552,7 +552,7 @@ class SafariPush {
 
 	private function valid_category_array($defaults = false) {
 		$arr = array();
-		$categories = get_categories( array('public'=> true), "objects");
+		$categories = get_categories( array('hide_empty' => 0), "objects");
 		foreach ($categories as $category) {
 			if($defaults) $arr[] = array($category->slug => 1);
 			else $arr[] = array("name" => $category->slug, "label" => $category->name);
