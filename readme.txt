@@ -40,6 +40,7 @@ TODO:
 
 Additional credits
 - Localisation and French-language version by Rémy Perona (http://remyperona.fr/)
+- WP_Logging by Pippin Williamson (https://github.com/pippinsplugins/WP-Logging)
 
 == Installation ==
 
@@ -81,6 +82,9 @@ I have been trying to get this to work with Pushwoosh. Unfortunately there are a
 Not right now, maybe never. Depends if this is something that a lot of people would want.
 
 == Changelog ==
+= 0.x =
+* Notifications are now logged and can be viewed on the settings page
+
 = 0.8.2 =
 * Allow inclusion of categories with no posts (thanks MuViMoTV)
 

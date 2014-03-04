@@ -36,3 +36,4 @@ TODO:
 
 Additional credits
 - Localisation and French-language version by Rémy Perona (http://remyperona.fr/)
+- WP_Logging by Pippin Williamson (https://github.com/pippinsplugins/WP-Logging)

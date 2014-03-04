@@ -17,6 +17,8 @@ if ( !function_exists( 'add_action' ) ) {
 	exit;
 }
 
+require_once("lib/WP_Logging.php");
+
 class SafariPush {
 
 	//Version
@@ -352,6 +354,31 @@ class SafariPush {
         </script>
         <?php } ?>
         <p><?php _e('To display this number somewhere, use the shortcode <code>[safari-push-count]</code>', "safari-push"); ?></p>
+        <h2><?php _e( 'Notification Logs', 'safari-push' ) ?></h2>
+        	<table class="widefat">
+			<thead>
+			<tr>
+			<th><?php _e( 'Date', 'safari-push' );?></th>
+			<th><?php _e( 'Post', 'safari-push' );?></th>
+			<th><?php _e( 'Response', 'safari-push' );?></th>
+			</tr>
+			</thead>
+			<tfoot>
+			<tr>
+			<th><?php _e( 'Date', 'safari-push' );?></th>
+			<th><?php _e( 'Post', 'safari-push' );?></th>
+			<th><?php _e( 'Response', 'safari-push' );?></th>
+			</tr>
+			</tfoot>
+			<tbody>
+			<?php
+			$logs = WP_Logging::get_logs();
+			foreach($logs as $log) {
+				echo '<tr><td>'.get_the_time('Y-m-d', $log->ID).'</td><td><a href="'.get_permalink($log->post_parent).'">'.get_the_title($log->post_parent).'</a></td><td>'.$log->post_content.'</td></tr>';
+			}
+			?>
+			</tbody>
+        	</table>
         <hr/>
         <p><a href="https://developer.apple.com/notifications/safari-push-notifications/"><?php _e( 'More information on Safari Push Notifications', 'safari-push' ) ?></a></p>
         <p><?php _e( 'Safari Push Notification Plugin for Wordpress by', 'safari-push' ) ?> <a href="http://www.surrealroad.com">Surreal Road</a>. <?php echo self::surrealTagline(); ?>.</p>
@@ -442,7 +469,7 @@ class SafariPush {
 
     // send notification
 
-    function newPushNotification($serviceURL, $endpoint, $title, $body, $action, $urlargs, $auth, $titleTag="title", $bodyTag="body", $actionTag="button", $urlargsTag="urlargs", $authTag="auth" ) {
+    function newPushNotification($serviceURL, $endpoint, $title, $body, $action, $urlargs, $auth, $titleTag="title", $bodyTag="body", $actionTag="button", $urlargsTag="urlargs", $authTag="auth", $post_id=0 ) {
 		$params = array($titleTag => $title, $bodyTag => $body, $actionTag => $action, $urlargsTag => $urlargs, $authTag => $auth);
 		$query = http_build_query ($params);
 		$contextData = array (
@@ -455,6 +482,7 @@ class SafariPush {
         	$serviceURL.$endpoint,
 			false,
 			$context);
+		$log_entry = WP_Logging::add( $title, $result, $post_id, "event" );
     }
 
     function notifyPost($newStatus, $oldStatus, $post) {
@@ -485,7 +513,7 @@ class SafariPush {
     	$actionTag = get_option('safaripush_actiontag');
     	$urlargsTag = get_option('safaripush_urlargstag');
     	$authTag = get_option('safaripush_authtag');
-	    self::newPushNotification($serviceURL, $endpoint, $title, $body, $action, $urlargs, $auth, $titleTag, $bodyTag, $actionTag, $urlargsTag, $authTag);
+	    self::newPushNotification($serviceURL, $endpoint, $title, $body, $action, $urlargs, $auth, $titleTag, $bodyTag, $actionTag, $urlargsTag, $authTag, $post->ID);
     }
 
     // utility functions
