@@ -372,7 +372,8 @@ class SafariPush {
 			</tfoot>
 			<tbody>
 			<?php
-			$logs = WP_Logging::get_logs();
+			$logging = new WP_Logging();
+			$logs = $logging->get_connected_logs(); // defaults are fine
 			foreach($logs as $log) {
 				echo '<tr><td>'.get_the_time('Y-m-d', $log->ID).'</td><td><a href="'.get_permalink($log->post_parent).'">'.get_the_title($log->post_parent).'</a></td><td>'.$log->post_content.'</td></tr>';
 			}
@@ -482,7 +483,8 @@ class SafariPush {
         	$serviceURL.$endpoint,
 			false,
 			$context);
-		$log_entry = WP_Logging::add( $title, $result, $post_id, "event" );
+		$logging = new WP_Logging();
+		$log_entry = $logging->add( $title, $result, $post_id, "event" );
     }
 
     function notifyPost($newStatus, $oldStatus, $post) {

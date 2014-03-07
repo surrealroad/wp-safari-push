@@ -280,7 +280,7 @@ class WP_Logging {
 	public static function get_connected_logs( $args = array() ) {
 
 		$defaults = array(
-			'post_parent'    => 0,
+			//'post_parent'    => 0,
 			'post_type'      => 'wp_log',
 			'posts_per_page' => 10,
 			'post_status'    => 'publish',
