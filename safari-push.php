@@ -598,7 +598,6 @@ class SafariPush {
 
 }
 
-$logging = new WP_Logging();
 $safaripush = new SafariPush();
 
 // shortcodes (must be declared outside of class)
