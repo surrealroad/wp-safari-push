@@ -45,6 +45,11 @@ class SafariPush {
 		add_action('admin_init', array($this,'registerSettings'));
 		add_action('admin_menu', array($this,'pluginSettings'));
 		$this->logging = new WP_Logging();
+
+		// create the log post type
+		add_action( 'init', array( $this->logging, 'register_post_type' ) );
+		// create types taxonomy and default types
+		add_action( 'init', array( $this->logging, 'register_taxonomy' ) );
 	}
 
 	static function install(){
