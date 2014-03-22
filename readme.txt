@@ -10,7 +10,9 @@ A Safari Push Plugin for Wordpress
 What does this plugin do?
 --
 This plugin lets you prompt users to allow Safari Push notifications from your Wordpress site, and then send out Safari Push notifications to every user each time you publish a new post from Wordpress. There's also an option to send notifications directly from the plugin's settings page.
+
 Additionally, it lets you use the shortcode `[safari-push]` anywhere you like that will provide feedback to visitors on their notification status, and the shortcode `[safari-push-count]` to show how many subscribers you have.
+
 This plugin is intentionally kept simple, feel free to fork the source and modify it to suit your needs.
 
 The source is maintained on GitHub: https://github.com/surrealroad/wp-safari-push
@@ -22,11 +24,13 @@ This plugin doesn't communicate with Apple's Push Notification Service (APNS) di
 What are Safari Push Notifications?
 --
 Push notifications are a feature in Safari 7 and Mac OS 10.9 “Mavericks” that allow websites to send users notifications to their desktop, even when Safari is closed.
+
 For much more information on this, see https://developer.apple.com/notifications/safari-push-notifications/
 
 What else do I need in order to use this plugin?
 --
 You'll also need a seperate, working HTTPS server for communicating with Safari and Apple Push Notification Server (referred to as the "Web Service").
+
 For a PHP implementation of the Web Service, refer to our reference project at https://github.com/surrealroad/Safari-Push-Notifications.
 
 Can I see it in action?
@@ -35,12 +39,13 @@ Sure, go to http://www.controlcommandescape.com/push/ (you'll probably want to o
 
 
 TODO:
-- Pushwoosh integration (pending response from PushWoosh support)
+
 - Comply with WordPress security guidelines
 
 Additional credits
+
 - Localisation and French-language version by Rémy Perona (http://remyperona.fr/)
-- WP_Logging by Pippin Williamson (https://github.com/pippinsplugins/WP-Logging)
+
 
 == Installation ==
 
@@ -73,9 +78,13 @@ A common problem is to forget to include the "www." part of the domain in the "a
 
 Notifications will be sent whenever a post is published for the first time. You can select which post types and which categories to enable notifications for.
 
-= What about Pushwoosh support? =
+= What about Pushwoosh/other third-party support? =
 
-I have been trying to get this to work with Pushwoosh. Unfortunately there are a couple of problems due to the API documentation not being particularly clear, and I have not received a response from anyone at Pushwoosh to in order address them.
+This plugin will not provide support for paid-for services.
+
+= Are there any plugin hooks I can use? =
+
+There's `safaripush_post_notification` and `safaripush_post_notification` which are called immediately before and after sending a notification.
 
 = Can I customise what gets sent to which device? =
 
@@ -84,6 +93,7 @@ Not right now, maybe never. Depends if this is something that a lot of people wo
 == Changelog ==
 = 0.x =
 * Notifications are now logged and can be viewed on the settings page
+* Added two plugin hooks, safaripush_pre_notification and safaripush_post_notification
 
 = 0.8.2 =
 * Allow inclusion of categories with no posts (thanks MuViMoTV)

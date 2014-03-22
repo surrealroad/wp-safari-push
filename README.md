@@ -31,9 +31,7 @@ Sure, go to http://www.controlcommandescape.com/push/ (you'll probably want to o
 
 
 TODO:
-- Pushwoosh integration (pending response from PushWoosh support)
 - Comply with WordPress security guidelines
 
 Additional credits
 - Localisation and French-language version by Rémy Perona (http://remyperona.fr/)
-- WP_Logging by Pippin Williamson (https://github.com/pippinsplugins/WP-Logging)

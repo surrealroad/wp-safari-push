@@ -480,11 +480,13 @@ class SafariPush {
         	"Content-Length: ".strlen($query)."\r\n",
         	'content'=> $query );
         $context = stream_context_create (array ( 'http' => $contextData ));
+        do_action('safaripush_pre_notification');
         $result =  file_get_contents (
         	$serviceURL.$endpoint,
 			false,
 			$context);
-		self::addLog("new test", $post->ID);
+		self::addLog($result, $post_id);
+		do_action('safaripush_post_notification', $post_id, $result);
     }
 
     function notifyPost($newStatus, $oldStatus, $post) {
