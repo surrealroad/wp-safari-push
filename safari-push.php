@@ -17,11 +17,7 @@ if ( !function_exists( 'add_action' ) ) {
 	exit;
 }
 
-require_once("lib/WP_Logging.php");
-
 class SafariPush {
-
-	public $logging;
 
 	//Version
 	static $version ='0.8.2';
@@ -357,6 +353,9 @@ class SafariPush {
         <?php } ?>
         <p><?php _e('To display this number somewhere, use the shortcode <code>[safari-push-count]</code>', "safari-push"); ?></p>
         <h2><?php _e( 'Notification Logs', 'safari-push' ) ?></h2>
+        <?php
+
+        ?>
         	<table class="widefat">
 			<thead>
 			<tr>
@@ -374,7 +373,8 @@ class SafariPush {
 			</tfoot>
 			<tbody>
 			<?php
-			$logs = $this->logging->get_connected_logs(); // defaults are fine
+			$logs = self::getLogs();
+			print_r($logs);
 			foreach($logs as $log) {
 				echo '<tr><td>'.get_the_time('Y-m-d', $log->ID).'</td><td><a href="'.get_permalink($log->post_parent).'">'.get_the_title($log->post_parent).'</a></td><td>'.$log->post_content.'</td></tr>';
 			}
@@ -484,7 +484,7 @@ class SafariPush {
         	$serviceURL.$endpoint,
 			false,
 			$context);
-		$log_entry = $this->logging->add( $title, $result, $post_id, "event" );
+		self::addLog("new test", $post->ID);
     }
 
     function notifyPost($newStatus, $oldStatus, $post) {
@@ -498,7 +498,10 @@ class SafariPush {
 	    	if($value) $categories[] = $key;
     	}
     	if( 'publish' != $newStatus) return;
-    	elseif( 'publish' === $oldStatus) return;
+    	elseif( 'publish' === $oldStatus) {//return;
+    		self::addLog("new test", $post->ID);
+			return;
+		}
     	elseif(!in_array(get_post_type($post), $post_types)) return;
     	elseif(count(wp_get_post_categories($post->ID)) && !in_category($categories, $post)) return;
     	$serviceURL = get_option('safaripush_webserviceurl');
@@ -516,6 +519,16 @@ class SafariPush {
     	$urlargsTag = get_option('safaripush_urlargstag');
     	$authTag = get_option('safaripush_authtag');
 	    self::newPushNotification($serviceURL, $endpoint, $title, $body, $action, $urlargs, $auth, $titleTag, $bodyTag, $actionTag, $urlargsTag, $authTag, $post->ID);
+    }
+
+    // logging
+
+    public function addLog($title = "", $post_id = 0) {
+
+    }
+
+    public function getLogs() {
+	    return array();
     }
 
     // utility functions
@@ -597,9 +610,7 @@ class SafariPush {
 
 }
 
-$logging = new WP_Logging();
 $safaripush = new SafariPush();
-$safaripush->logging = $logging;
 
 // shortcodes (must be declared outside of class)
 add_shortcode('safari-push', array('SafariPush', 'renderSafariPushShortcode'));
