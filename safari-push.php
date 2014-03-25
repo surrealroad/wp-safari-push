@@ -66,6 +66,7 @@ class SafariPush {
 		add_option("safaripush_enabledposttypes", self::valid_post_type_array(true));
 		add_option("safaripush_enabledcategories", self::valid_category_array(true));
 		add_option("safaripush_enqueuefooter", false);
+		add_option("safaripush_log", array());
 	}
 
 	static function uninstall(){
@@ -92,6 +93,7 @@ class SafariPush {
 		delete_option('safaripush_enabledposttypes');
 		delete_option('safaripush_enabledcategories');
 		delete_option('safaripush_enqueuefooter');
+		delete_option('safaripush_log');
 	}
 
 
@@ -376,7 +378,7 @@ class SafariPush {
 			$logs = self::getLogs();
 			print_r($logs);
 			foreach($logs as $log) {
-				echo '<tr><td>'.get_the_time('Y-m-d', $log->ID).'</td><td><a href="'.get_permalink($log->post_parent).'">'.get_the_title($log->post_parent).'</a></td><td>'.$log->post_content.'</td></tr>';
+				echo '<tr><td>'.get_the_time('Y-m-d', $log[0]).'</td><td><a href="'.get_permalink($log[2]).'">'.get_the_title($log[2]).'</a></td><td>'.$log[1].'</td></tr>';
 			}
 			?>
 			</tbody>
@@ -526,11 +528,11 @@ class SafariPush {
     // logging
 
     public function addLog($title = "", $post_id = 0) {
-
+		update_option('', array_merge(get_option('safaripush_log'), array(time(), $title, $post_id)));
     }
 
     public function getLogs() {
-	    return array();
+	    return get_option('safaripush_log');
     }
 
     // utility functions
