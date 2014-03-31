@@ -354,7 +354,8 @@ class SafariPush {
         <p><?php _e('To display this number somewhere, use the shortcode <code>[safari-push-count]</code>', "safari-push"); ?></p>
         <?php
 		$logs = self::getLogs();
-		if (count($logs) >0) { ?>
+		$logcount = count($logs);
+		if ($logcount>0) { ?>
         <h2><?php _e( 'Notification Logs', 'safari-push' ) ?></h2>
         <?php
 
@@ -380,7 +381,25 @@ class SafariPush {
 			} ?>
 			</tbody>
         	</table>
-        <?php } ?>
+        	<?php
+        	// http://stackoverflow.com/questions/5322266/add-pagination-in-wordpress-admin-in-my-own-customized-plugin
+        	$pagenum = isset( $_GET['pagenum'] ) ? absint( $_GET['pagenum'] ) : 1;
+        	$limit = 10; // number of rows in page
+			$offset = ( $pagenum - 1 ) * $limit;
+			$num_of_pages = ceil( $logcount / $limit );
+        	$page_links = paginate_links( array(
+			    'base' => add_query_arg( 'pagenum', '%#%' ),
+			    'format' => '',
+			    'prev_text' => __( '&laquo;', 'text-domain' ),
+			    'next_text' => __( '&raquo;', 'text-domain' ),
+			    'total' => $num_of_pages,
+			    'current' => $pagenum
+			) );
+
+			if ( $page_links ) {
+			    echo '<div class="tablenav"><div class="tablenav-pages" style="margin: 1em 0">' . $page_links . '</div></div>';
+			}
+        } ?>
         <hr/>
         <p><a href="https://developer.apple.com/notifications/safari-push-notifications/"><?php _e( 'More information on Safari Push Notifications', 'safari-push' ) ?></a></p>
         <p><?php _e( 'Safari Push Notification Plugin for Wordpress by', 'safari-push' ) ?> <a href="http://www.surrealroad.com">Surreal Road</a>. <?php echo self::surrealTagline(); ?>.</p>
