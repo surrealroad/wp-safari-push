@@ -66,7 +66,6 @@ class SafariPush {
 		add_option("safaripush_enabledposttypes", self::valid_post_type_array(true));
 		add_option("safaripush_enabledcategories", self::valid_category_array(true));
 		add_option("safaripush_enqueuefooter", false);
-		add_option("safaripush_log", array());
 	}
 
 	static function uninstall(){
@@ -93,7 +92,6 @@ class SafariPush {
 		delete_option('safaripush_enabledposttypes');
 		delete_option('safaripush_enabledcategories');
 		delete_option('safaripush_enqueuefooter');
-		delete_option('safaripush_log');
 	}
 
 
@@ -354,6 +352,9 @@ class SafariPush {
         </script>
         <?php } ?>
         <p><?php _e('To display this number somewhere, use the shortcode <code>[safari-push-count]</code>', "safari-push"); ?></p>
+        <?php
+		$logs = self::getLogs();
+		if (count($logs) >0) { ?>
         <h2><?php _e( 'Notification Logs', 'safari-push' ) ?></h2>
         <?php
 
@@ -374,15 +375,12 @@ class SafariPush {
 			</tr>
 			</tfoot>
 			<tbody>
-			<?php
-			$logs = self::getLogs();
-			print_r($logs);
-			foreach($logs as $log) {
-				echo '<tr><td>'.get_the_time('Y-m-d', $log[0]).'</td><td><a href="'.get_permalink($log[2]).'">'.get_the_title($log[2]).'</a></td><td>'.$log[1].'</td></tr>';
-			}
-			?>
+			<?php foreach($logs as $log) {
+				echo '<tr><td>'.get_the_time('Y-m-d', $log['time']).'</td><td><a href="'.get_permalink($log['postid']).'">'.get_the_title($log['postid']).'</a></td><td>'.$log['response'].'</td></tr>';
+			} ?>
 			</tbody>
         	</table>
+        <?php } ?>
         <hr/>
         <p><a href="https://developer.apple.com/notifications/safari-push-notifications/"><?php _e( 'More information on Safari Push Notifications', 'safari-push' ) ?></a></p>
         <p><?php _e( 'Safari Push Notification Plugin for Wordpress by', 'safari-push' ) ?> <a href="http://www.surrealroad.com">Surreal Road</a>. <?php echo self::surrealTagline(); ?>.</p>
@@ -483,12 +481,12 @@ class SafariPush {
         	'content'=> $query );
         $context = stream_context_create (array ( 'http' => $contextData ));
         do_action('safaripush_pre_notification');
-        $result =  file_get_contents (
+        $response =  file_get_contents (
         	$serviceURL.$endpoint,
 			false,
 			$context);
-		self::addLog($result, $post_id);
-		do_action('safaripush_post_notification', $post_id, $result);
+		self::addLog($post_id, $response);
+		do_action('safaripush_post_notification', $post_id, $response);
     }
 
     function notifyPost($newStatus, $oldStatus, $post) {
@@ -502,10 +500,7 @@ class SafariPush {
 	    	if($value) $categories[] = $key;
     	}
     	if( 'publish' != $newStatus) return;
-    	elseif( 'publish' === $oldStatus) {//return;
-    		self::addLog("new test", $post->ID);
-			return;
-		}
+    	elseif( 'publish' === $oldStatus) return;
     	elseif(!in_array(get_post_type($post), $post_types)) return;
     	elseif(count(wp_get_post_categories($post->ID)) && !in_category($categories, $post)) return;
     	$serviceURL = get_option('safaripush_webserviceurl');
@@ -527,12 +522,33 @@ class SafariPush {
 
     // logging
 
-    public function addLog($title = "", $post_id = 0) {
-		update_option('', array_merge(get_option('safaripush_log'), array(time(), $title, $post_id)));
+    public function addLog($post_id, $response) {
+	    update_post_meta($post_id, 'safaripush_response', $response);
+    	update_post_meta($post_id, 'safaripush_time', time());
     }
 
     public function getLogs() {
-	    return get_option('safaripush_log');
+		$logs = array();
+		$query_args = array(
+			'meta_key' => 'safaripush_time',
+			'meta_compare' => 'EXISTS',
+			'order' => 'DESC',
+			'orderby' => 'meta_value_num'
+		);
+		$query = new WP_Query($query_args);
+		if ( $query->have_posts() ) {
+			while ( $query->have_posts() ) {
+				$query->the_post();
+				$post_id = get_the_ID();
+				$logs[] = array(
+					'postid' =>$post_id,
+					'time' => get_post_meta( $post_id, 'safaripush_time', true ),
+					'response' =>get_post_meta( $post_id, 'safaripush_response', true )
+				);
+			}
+        }
+		wp_reset_postdata();
+		return $logs;
     }
 
     // utility functions
