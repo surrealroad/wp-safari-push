@@ -281,8 +281,8 @@ class SafariPush {
 		            html = '<div class="error"><p><?php _e('A required field is not filled in', "safari-push"); ?></p></div>';
 		            $("#test-result").html(html);
 	            } else {
-	            	var jqxhr = $.post(url, data, function() {
-					  html = '<div class="updated"><p><?php _e('Notification sent', "safari-push"); ?></p></div>';
+	            	var jqxhr = $.post(url, data, function(response) {
+					  html = '<div class="updated"><p><?php _e('Notification sent', "safari-push"); ?> ('+response+')</p></div>';
 					})
 					.fail(function() { html = '<div class="error"><p><?php _e('Error communicating with push service', "safari-push"); ?></p></div>'; })
 					.always(function() { $("#test-result").html(html); });

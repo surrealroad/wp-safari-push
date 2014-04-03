@@ -91,6 +91,9 @@ There's `safaripush_post_notification` and `safaripush_post_notification` which 
 Not right now, maybe never. Depends if this is something that a lot of people would want.
 
 == Changelog ==
+= 0.x =
+* Sending a manual push now includes the server response in the result
+
 = 0.9 =
 * Notifications are now logged and can be viewed on the settings page
 * Added two plugin hooks, safaripush_pre_notification and safaripush_post_notification
