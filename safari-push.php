@@ -542,7 +542,7 @@ class SafariPush {
     // logging
 
     public function addLog($post_id, $response) {
-	    update_post_meta($post_id, 'safaripush_response', $response);
+	    update_post_meta($post_id, 'safaripush_response', esc_sql($response));
     	update_post_meta($post_id, 'safaripush_time', time());
     }
 
