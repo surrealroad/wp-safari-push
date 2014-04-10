@@ -30,7 +30,7 @@ class SafariPush {
 	);
 
 	public function getVersion() {
-		return $this::version;
+		return $this->version;
 	}
 
 	public function __construct() {
