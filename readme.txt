@@ -1,6 +1,6 @@
 === Safari Push ===
 Tags: safari, push notifications, mac, os x, mavericks
-Stable tag: 0.9
+Stable tag: 0.9.1
 Tested up to: 3.8.1
 
 A Safari Push Plugin for Wordpress
@@ -91,8 +91,9 @@ There's `safaripush_post_notification` and `safaripush_post_notification` which 
 Not right now, maybe never. Depends if this is something that a lot of people would want.
 
 == Changelog ==
-= 0.x =
+= 0.9.1 =
 * Sending a manual push now includes the server response in the result
+* Fix for PHP unexpected T_PAAMAYIM_NEKUDOTAYIM error
 
 = 0.9 =
 * Notifications are now logged and can be viewed on the settings page
