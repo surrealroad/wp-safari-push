@@ -91,6 +91,9 @@ There's `safaripush_post_notification` and `safaripush_post_notification` which 
 Not right now, maybe never. Depends if this is something that a lot of people would want.
 
 == Changelog ==
+= 0.x =
+* Corrected date displayed in notification logs
+
 = 0.9.1 =
 * Sending a manual push now includes the server response in the result
 * Fix for PHP unexpected T_PAAMAYIM_NEKUDOTAYIM error

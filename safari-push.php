@@ -377,7 +377,7 @@ class SafariPush {
 			</tfoot>
 			<tbody>
 			<?php foreach($logs as $log) {
-				echo '<tr><td>'.get_the_time('Y-m-d', $log['time']).'</td><td><a href="'.get_permalink($log['postid']).'">'.get_the_title($log['postid']).'</a></td><td>'.$log['response'].'</td></tr>';
+				echo '<tr><td>'.date('Y-m-d H:i', $log['time']).'</td><td><a href="'.get_permalink($log['postid']).'">'.get_the_title($log['postid']).'</a></td><td>'.$log['response'].'</td></tr>';
 			} ?>
 			</tbody>
         	</table>
