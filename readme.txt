@@ -92,7 +92,9 @@ Not right now, maybe never. Depends if this is something that a lot of people wo
 
 == Changelog ==
 = 0.x =
+* Notification settings can be configured for each post when publishing the post
 * Corrected date displayed in notification logs
+* Dates and times are displayed in accordance with Wordpress settings where possible
 
 = 0.9.1 =
 * Sending a manual push now includes the server response in the result
