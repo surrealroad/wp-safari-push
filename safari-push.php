@@ -104,6 +104,7 @@ class SafariPush {
 		add_action('wp_enqueue_scripts', array($this, 'enqueuescripts'));
 		add_action('transition_post_status', array($this, 'notifyPost'), 10, 3);
 		add_action( 'post_submitbox_misc_actions', array($this, 'post_page_metabox'));
+		add_action( 'save_post', array($this, 'meta_box_save' ));
 
 		$plugin = plugin_basename(__FILE__);
 		add_filter("plugin_action_links_$plugin", array($this, 'settings_link'));
@@ -417,34 +418,46 @@ class SafariPush {
 	function post_page_metabox() {
 		if (!$this->post_type_is_pushable($post)) return;
 		elseif (!$this->post_category_is_pushable($post)) return;
+
 		global $post;
 		$disabled = '';
 		$checked = true;
+		$willNotifyMsg = __('Will notify', "safaripush");
+		$wontNotifyMsg = __('Off', "safaripush");
+
+		$meta = get_post_meta( $post->ID, "_safaripush", true );
+		if (!$title = $meta['title']) $title = get_option('safaripush_pushtitle');
+    	if (!$body = $meta['body']) $body = get_option('safaripush_pushbody');
+    	if (!$action = $meta['action']) $action = get_option('safaripush_pushlabel');
 		?><div id="safaripush" class="misc-pub-section misc-pub-section-last">
-			<?php _e( 'Safari Push notifications:', 'safari-push' ); ?> <span id="safaripush-status"><strong><?php _e( 'On', 'safari-push' ); ?></strong></span>
+			<?php _e( 'Safari Push Notification:', 'safari-push' ); ?> <span id="safaripush-status"><strong><?php echo $willNotifyMsg; ?></strong></span>
 			<a href="#" id="safaripush-form-edit"><?php _e( 'Edit', 'safari-push' ); ?></a>
 			&nbsp;<a href="<?php echo admin_url('options-general.php?page=safaripush'); ?>" target="_blank"><?php _e( 'Settings', 'safari-push' ); ?></a><br>
 			<div id="safaripush-form" class="hide-if-js">
 				<?php //check if push notification already sent
 				?>
-				<label for="safaripush-submit">
-					<input type="checkbox" name="safaripush[submit]" id="safaripush-submit" class="safaripush-submit" value="1" <?php
-						checked( true, $checked );
-						echo $disabled;
-						?>/>
-					<?php _e('Send notification', "safaripush"); ?>
-				</label>
-				<textarea name="safaripush_title" id="safaripush-title"></textarea>
+				<ul>
+					<li>
+						<label for="safaripush-submit">
+							<input type="checkbox" name="safaripush[submit]" id="safaripush-submit" class="safaripush-submit" value="1" <?php
+								checked( true, $checked );
+								echo $disabled;
+								?>/>
+							<?php _e('Send notification', "safaripush"); ?>
+						</label>
+					</li>
+				</ul>
 				<label for="safaripush-title"><?php _e('Title:', "safaripush"); ?></label>
-				<textarea name="safaripush_title" id="safaripush-title"></textarea>
+				<input name="safaripush[title]" id="safaripush-title" type="text" value="<?php echo esc_attr($title); ?>"/>
 				<label for="safaripush-body"><?php _e('Body:', "safaripush"); ?></label>
-				<textarea name="safaripush_body" id="safaripush-body"></textarea>
+				<textarea name="safaripush[body]" id="safaripush-body"><?php echo esc_attr($body); ?></textarea>
 				<label for="safaripush-button"><?php _e('Button label:', "safaripush"); ?></label>
-				<input name="safaripush_body" id="safaripush-button" type="text" value=""/>
+				<input name="safaripush[action]" id="safaripush-action" type="text" value="<?php echo esc_attr($action); ?>"/>
 				<a href="#" class="hide-if-no-js" id="safaripush-form-hide"><?php _e('Hide', "safaripush"); ?></a>
 			</div>
 		</div>
 		<script type="text/javascript">
+		jQuery(function($) {
 			$('#safaripush-form-edit').click( function(e) {
 				e.preventDefault();
 				$('#safaripush-form').slideDown( 'fast', function() {
@@ -456,10 +469,35 @@ class SafariPush {
 				e.preventDefault();
 				$('#safaripush-form').slideUp( 'fast' , function() {
 				});
-				$('#safaripush-status').html( '<strong>' + <?php _e( 'On', 'safari-push' ); ?> + '</strong>' ).show();
+				$('#safaripush-status').html( '<strong><?php _e( 'On', 'safari-push' ); ?></strong>' ).show();
 				$('#safaripush-form-edit').show();
 			});
-		</script><?php
+		});
+		</script>
+		<style type="text/css">
+		#safaripush input[type=text], #safaripush textarea {
+			width:100%;
+			margin: 4px 0 0;
+		}
+		#safaripush ul {
+			margin: 4px 0 4px 6px;
+		}
+		#safaripush li {
+			margin: 0;
+		}
+		</style><?php
+	}
+
+	function meta_box_save($post_id) {
+		if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return $post_id;
+
+		if ( isset( $_POST['post_type'] ) && ( 'post' == $_POST['post_type'] || 'page' == $_POST['post_type'] ) ) {
+			if ( current_user_can( 'edit_post', $post_id ) ) {
+				// https://trepmal.com/action_hook/post_submitbox_misc_actions/
+				update_post_meta( $post_id, '_safaripush', $_POST['safaripush'], get_post_meta( $post_id, '_safaripush', true ) );
+			}
+		}
+	  	return $post_id;
 	}
 
     function initWebServiceSettings() {
@@ -515,7 +553,7 @@ class SafariPush {
     	self::text_input('safaripush_pushtitle', __( 'Title for notifications displayed, e.g. New Post', 'safari-push' ) );
     }
     function notificationBodyInput(){
-    	self::text_area('safaripush_pushbody', __( 'Body for notifications displayed, e.g. {post-title}', 'safari-push' ) );
+    	self::text_input('safaripush_pushbody', __( 'Body for notifications displayed, e.g. {post-title}', 'safari-push' ) );
     }
     function notificationLabelInput(){
     	self::text_input('safaripush_pushlabel', __( 'Button label for notifications displayed, e.g. View', 'safari-push' ) );
@@ -574,9 +612,11 @@ class SafariPush {
     	$serviceURL = get_option('safaripush_webserviceurl');
     	$endpoint = get_option('safaripush_pushendpoint');
     	$auth = get_option('safaripush_authcode');
-    	$title = get_option('safaripush_pushtitle');
-    	$body = $post->post_title;
-    	$action = get_option('safaripush_pushlabel');;
+    	if (!$title = get_post_meta( $post->ID, "safaripush_title", true )) $title = get_option('safaripush_pushtitle');
+    	if (!$body = get_post_meta( $post->ID, "safaripush_body", true )) $body = get_option('safaripush_pushbody');
+    	if (!$action = get_post_meta( $post->ID, "safaripush_action", true )) $action = get_option('safaripush_pushlabel');
+    	$title = str_replace("{post-title}", $post->post_title, $title);
+    	$body = str_replace("{post-title}", $post->post_title, $body);
     	$url = parse_url( home_url('?p=' . $post->ID ) );
     	$urlargs = ltrim($url["path"],'/');
     	if(isset($url["query"])) $urlargs.="?".$url["query"];
@@ -710,8 +750,8 @@ class SafariPush {
     public function safaripush_display_timestamp($date) {
 		if(get_option('date_format')) $d = date(get_option('date_format'), $date);
 		else $d = date('Y-m-d', $date);
-		if(get_option('time_format')) $d = date(get_option('time_format'), $date);
-		else $d = date('H:i', $date);
+		if(get_option('time_format')) $t = date(get_option('time_format'), $date);
+		else $t = date('H:i', $date);
 		return $d." ".$t;
 	}
 
