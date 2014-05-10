@@ -138,7 +138,7 @@ class SafariPush {
 
 	    add_settings_section('safaripush-behaviour', __( 'Behaviour Settings', 'safari-push' ), array($this, 'initBehaviourSettings'), 'safaripush');
 	    add_settings_field('safaripush-behaviour-enabledposttypes', __( 'Enabled post types', 'safari-push' ), array($this, 'behaviourEnabledposttypesInput'), 'safaripush', 'safaripush-behaviour');
-	    add_settings_field('safaripush-behaviour-enabledcategories', __( 'Enabled categories', 'safari-push' ), array($this, 'behaviourEnabledcategoriesInput'), 'safaripush', 'safaripush-behaviour');
+	    // add_settings_field('safaripush-behaviour-enabledcategories', __( 'Enabled categories', 'safari-push' ), array($this, 'behaviourEnabledcategoriesInput'), 'safaripush', 'safaripush-behaviour'); // removed because categories are too liquid
 	    add_settings_field('safaripush-behaviour-enqueuefooter', __( 'Load Javascript in footer', 'safari-push' ), array($this, 'behaviourEnqueuefooterInput'), 'safaripush', 'safaripush-behaviour');
     }
 
@@ -417,7 +417,7 @@ class SafariPush {
 	// show a metabox on post pages to control sending push notifications
 	function post_page_metabox() {
 		if (!$this->post_type_is_pushable($post)) return;
-		elseif (!$this->post_category_is_pushable($post)) return;
+		//elseif (!$this->post_category_is_pushable($post)) return; // removed because categories are too liquid
 
 		global $post;
 		$disabled = '';

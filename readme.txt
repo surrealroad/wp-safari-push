@@ -95,6 +95,7 @@ Not right now, maybe never. Depends if this is something that a lot of people wo
 * Notification settings can be configured for each post when publishing the post
 * Corrected date displayed in notification logs
 * Dates and times are displayed in accordance with Wordpress settings where possible
+* Removed the option to restrict push notifications per category, as this can be controlled with more granularity at the post level now
 
 = 0.9.1 =
 * Sending a manual push now includes the server response in the result
