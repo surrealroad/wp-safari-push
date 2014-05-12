@@ -420,7 +420,7 @@ class SafariPush {
 		if (!$this->post_type_is_pushable($post)) return;
 		//elseif (!$this->post_category_is_pushable($post)) return; // removed because categories are too liquid
 		$disabled = '';
-		$willNotifyMsg = __('Will notify', "safaripush");
+		$willNotifyMsg = __('On', "safaripush");
 		$wontNotifyMsg = __('Off', "safaripush");
 		$msg = '';
 		$editLabel = __( 'Edit', 'safari-push' );
@@ -483,15 +483,33 @@ class SafariPush {
 			$('#safaripush-form-edit').click( function(e) {
 				e.preventDefault();
 				$('#safaripush-form').slideDown( 'fast', function() {
+					var titleInput = $("#safaripush-title"),
+						bodyInput = $("#safaripush-body"),
+						postTitle = $("#title").val();
+					if(postTitle) {
+						titleInput.val(function(i,v){return v.replace("{post-title}", postTitle)});
+						bodyInput.val(function(i,v){return v.replace("{post-title}", postTitle)});
+					}
 				});
 				$('#safaripush-status').hide();
 				$(this).hide();
 			});
 			$('#safaripush-form-hide').click( function(e) {
 				e.preventDefault();
+				var status = '';
+				if($("#safaripush-submit").is(':checked')) status = '<?php echo $willNotifyMsg; ?>';
+				else if($("#safaripush-submit").is(':not(:checked)')) status = '<?php echo $wontNotifyMsg; ?>';
+				var titleInput = $("#safaripush-title"),
+					bodyInput = $("#safaripush-body"),
+					postTitle = $("#title").val();
+				if(postTitle) {
+					titleInput.val(function(i,v){return v.replace(postTitle, "{post-title}")});
+					bodyInput.val(function(i,v){return v.replace(postTitle, "{post-title}")});
+				}
 				$('#safaripush-form').slideUp( 'fast' , function() {
 				});
-				$('#safaripush-status').html( '<strong><?php _e( 'On', 'safari-push' ); ?></strong>' ).show();
+				$('#safaripush-status').show();
+				if(status) $('#safaripush-status').html( '<strong>' + status + '</strong>' );
 				$('#safaripush-form-edit').show();
 			});
 		});
@@ -515,6 +533,11 @@ class SafariPush {
 
 		if ( isset( $_POST['post_type'] ) && ( 'post' == $_POST['post_type'] || 'page' == $_POST['post_type'] ) ) {
 			if ( current_user_can( 'edit_post', $post_id ) ) {
+				if($_POST['post_title']) {
+					$count = 1;
+					$_POST['safaripush']['title'] = str_replace($_POST['post_title'], "{post-title}", $_POST['safaripush']['title'],$count);
+					$_POST['safaripush']['body'] = str_replace($_POST['post_title'], "{post-title}", $_POST['safaripush']['body'], $count);
+				}
 				// https://trepmal.com/action_hook/post_submitbox_misc_actions/
 				update_post_meta( $post_id, '_safaripush', $_POST['safaripush'], get_post_meta( $post_id, '_safaripush', true ) );
 			}
