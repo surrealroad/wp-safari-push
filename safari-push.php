@@ -416,27 +416,48 @@ class SafariPush {
 
 	// show a metabox on post pages to control sending push notifications
 	function post_page_metabox() {
+		global $post;
 		if (!$this->post_type_is_pushable($post)) return;
 		//elseif (!$this->post_category_is_pushable($post)) return; // removed because categories are too liquid
-
-		global $post;
 		$disabled = '';
-		$checked = true;
 		$willNotifyMsg = __('Will notify', "safaripush");
 		$wontNotifyMsg = __('Off', "safaripush");
+		$msg = '';
+		$editLabel = __( 'Edit', 'safari-push' );
+		$complete = false;
 
-		$meta = get_post_meta( $post->ID, "_safaripush", true );
-		if (!$title = $meta['title']) $title = get_option('safaripush_pushtitle');
-    	if (!$body = $meta['body']) $body = get_option('safaripush_pushbody');
-    	if (!$action = $meta['action']) $action = get_option('safaripush_pushlabel');
+		$meta = $this->get_pushdata_for_post($post->ID);
+		$title = $meta['title'];
+		$body = $meta['body'];
+		$action = $meta['action'];
+		$time = $meta['time'];
+		$response = $meta['response'];
+		$submit = $meta['submit'];
+		$checked = $meta['submit'];
+
+		if($submit && !$time) {
+			$msg = $willNotifyMsg;
+		} elseif($submit && $time) {
+			$complete = true;
+			$msg = __('Sent', "safaripush");
+			if($response) $msg.=' ('.$response.')';
+			$editLabel = __( 'View', "safaripush");
+			$disabled = ' disabled="disabled"';
+		} else {
+			$msg = $wontNotifyMsg;
+		}
+
 		?><div id="safaripush" class="misc-pub-section misc-pub-section-last">
-			<?php _e( 'Safari Push Notification:', 'safari-push' ); ?> <span id="safaripush-status"><strong><?php echo $willNotifyMsg; ?></strong></span>
-			<a href="#" id="safaripush-form-edit"><?php _e( 'Edit', 'safari-push' ); ?></a>
+			<?php _e( 'Safari Push Notification:', 'safari-push' ); ?> <span id="safaripush-status"><strong><?php echo $msg; ?></strong></span>
+			<a href="#" id="safaripush-form-edit"><?php echo $editLabel; ?></a>
 			&nbsp;<a href="<?php echo admin_url('options-general.php?page=safaripush'); ?>" target="_blank"><?php _e( 'Settings', 'safari-push' ); ?></a><br>
 			<div id="safaripush-form" class="hide-if-js">
-				<?php //check if push notification already sent
-				?>
 				<ul>
+					<?php //check if push notification already sent
+					if($complete) {
+						echo '<li>'.__('Sent: ', "safaripush").self::safaripush_display_timestamp($time).'</li>';
+						echo '<li>'.__('Response: ', "safaripush").$response.'</li>';
+					} else { ?>
 					<li>
 						<label for="safaripush-submit">
 							<input type="checkbox" name="safaripush[submit]" id="safaripush-submit" class="safaripush-submit" value="1" <?php
@@ -446,13 +467,14 @@ class SafariPush {
 							<?php _e('Send notification', "safaripush"); ?>
 						</label>
 					</li>
+					<?php } ?>
 				</ul>
 				<label for="safaripush-title"><?php _e('Title:', "safaripush"); ?></label>
-				<input name="safaripush[title]" id="safaripush-title" type="text" value="<?php echo esc_attr($title); ?>"/>
+				<input name="safaripush[title]" id="safaripush-title" type="text" value="<?php echo esc_attr($title); ?>"<?php echo $disabled;?>/>
 				<label for="safaripush-body"><?php _e('Body:', "safaripush"); ?></label>
-				<textarea name="safaripush[body]" id="safaripush-body"><?php echo esc_attr($body); ?></textarea>
+				<textarea name="safaripush[body]" id="safaripush-body"<?php echo $disabled;?>><?php echo esc_attr($body); ?></textarea>
 				<label for="safaripush-button"><?php _e('Button label:', "safaripush"); ?></label>
-				<input name="safaripush[action]" id="safaripush-action" type="text" value="<?php echo esc_attr($action); ?>"/>
+				<input name="safaripush[action]" id="safaripush-action" type="text" value="<?php echo esc_attr($action); ?>"<?php echo $disabled;?>/>
 				<a href="#" class="hide-if-no-js" id="safaripush-form-hide"><?php _e('Hide', "safaripush"); ?></a>
 			</div>
 		</div>
@@ -600,6 +622,8 @@ class SafariPush {
 			false,
 			$context);
 		self::addLog($post_id, $response);
+		// bake submitted parameters
+    	if($post_id) update_post_meta( $post_id, '_safaripush', array("title" => $title, "body" => $body, "action" => $action, "submit" => 1), get_post_meta( $post_id, '_safaripush', true ) );
 		do_action('safaripush_post_notification', $post_id, $response);
     }
 
@@ -608,13 +632,12 @@ class SafariPush {
     	if( 'publish' != $newStatus) return;
     	elseif( 'publish' === $oldStatus) return;
     	// only notify if notification enabled for post
-
-    	$serviceURL = get_option('safaripush_webserviceurl');
-    	$endpoint = get_option('safaripush_pushendpoint');
-    	$auth = get_option('safaripush_authcode');
-    	if (!$title = get_post_meta( $post->ID, "safaripush_title", true )) $title = get_option('safaripush_pushtitle');
-    	if (!$body = get_post_meta( $post->ID, "safaripush_body", true )) $body = get_option('safaripush_pushbody');
-    	if (!$action = get_post_meta( $post->ID, "safaripush_action", true )) $action = get_option('safaripush_pushlabel');
+    	$meta = $this->get_pushdata_for_post($post->ID);
+    	$submit = $meta['submit'];
+    	if(isset($submit) && !$submit) return;
+		$title = $meta['title'];
+		$body = $meta['body'];
+		$action = $meta['action'];
     	$title = str_replace("{post-title}", $post->post_title, $title);
     	$body = str_replace("{post-title}", $post->post_title, $body);
     	$url = parse_url( home_url('?p=' . $post->ID ) );
@@ -625,7 +648,21 @@ class SafariPush {
     	$actionTag = get_option('safaripush_actiontag');
     	$urlargsTag = get_option('safaripush_urlargstag');
     	$authTag = get_option('safaripush_authtag');
-	    self::newPushNotification($serviceURL, $endpoint, $title, $body, $action, $urlargs, $auth, $titleTag, $bodyTag, $actionTag, $urlargsTag, $authTag, $post->ID);
+    	$serviceURL = get_option('safaripush_webserviceurl');
+    	$endpoint = get_option('safaripush_pushendpoint');
+    	$auth = get_option('safaripush_authcode');
+    	self::newPushNotification($serviceURL, $endpoint, $title, $body, $action, $urlargs, $auth, $titleTag, $bodyTag, $actionTag, $urlargsTag, $authTag, $post->ID);
+    }
+
+    function get_pushdata_for_post($post_id) { // get relevant data for the specified post
+	    $meta = get_post_meta( $post_id, "_safaripush", true );
+	    if (!$title = $meta['title']) $title = get_option('safaripush_pushtitle');
+    	if (!$body = $meta['body']) $body = get_option('safaripush_pushbody');
+    	if (!$action = $meta['action']) $action = get_option('safaripush_pushlabel');
+    	if (!$submit = $meta['submit']) $submit = 1; // enable push by default
+    	$time = get_post_meta( $post_id, 'safaripush_time', true );
+    	$response = get_post_meta( $post_id, 'safaripush_response', true );
+    	return array("title" => $title, "body" => $body, "action" => $action, "submit" => $submit, "time" => $time, "response" => $response);
     }
 
     // logging
