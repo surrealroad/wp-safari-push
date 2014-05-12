@@ -550,7 +550,7 @@ class SafariPush {
     }
 
     function initNotificationSettings() {
-
+		_e('<p>The following settings can be changed individually per post, but you can set the default values here. Use <code>{post-title}</code> to use the WordPress post title in the title or body fields.</p>', "safari-push");
     }
 
     function initShortcodeSettings() {
