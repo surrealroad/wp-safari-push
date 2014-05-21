@@ -324,32 +324,7 @@ class SafariPush {
 			<p><?php echo __('There are ', "safari-push").(count($devices) - $regCount).__(' additional subscribed devices belonging to unregistered users', "safari-push"); ?></p>
         <?php } else { ?>
         <div id="safari-push-subscribers"><?php _e( 'Retrieving information', 'safari-push' ) ?>&hellip;</div>
-        <script type="text/javascript">
-        jQuery(document).ready(function($) {
-        	$.post("<?php echo get_option('safaripush_webserviceurl').get_option('safaripush_listendpoint'); ?>?<?php echo get_option('safaripush_authtag'); ?>=<?php echo get_option('safaripush_authcode'); ?>", function(data) {
-				if(data) {
-					var html = '<p><strong>'+data.length+' <?php _e('devices subscribed via push'); ?></strong>',
-						registeredUsers = new Array;
-
-					$.each(data, function(i, device) {
-						if(device.userid>0) registeredUsers.push(device.userid);
-					});
-
-					if(registeredUsers.length>0) {
-						html += ' (' + registeredUsers.length + ' <?php _e('registered user(s)', "safari-push"); ?>)' ;
-						html += ' </p><p><a href="<?php echo add_query_arg( 'show_users', true ); ?>"><?php _e('Show registered users', "safari-push"); ?></a>';
-					}
-					html += '</p>';
-				} else {
-					var html = '<p><?php _e('Error retrieving data from push service', "safari-push"); ?></p>';
-				}
-				$("#safari-push-subscribers").html(html);
-			}, "json").fail(function() {
-					var html = '<p><?php _e('Error retrieving data from push service', "safari-push"); ?></p>';
-					$("#safari-push-subscribers").html(html);
-			});
-        });
-        </script>
+        <?php self::printCountJS(); ?>
         <?php } ?>
         <p><?php _e('To display this number somewhere, use the shortcode <code>[safari-push-count]</code>', "safari-push"); ?></p>
         <?php
@@ -568,6 +543,35 @@ class SafariPush {
         }
 		wp_reset_postdata();
 		return $logs;
+    }
+
+    function printCountJS() {
+	    ?><script type="text/javascript">
+        jQuery(document).ready(function($) {
+        	$.post("<?php echo get_option('safaripush_webserviceurl').get_option('safaripush_listendpoint'); ?>?<?php echo get_option('safaripush_authtag'); ?>=<?php echo get_option('safaripush_authcode'); ?>", function(data) {
+				if(data) {
+					var html = '<p><strong>'+data.length+' <?php _e('devices subscribed via push'); ?></strong>',
+						registeredUsers = new Array;
+
+					$.each(data, function(i, device) {
+						if(device.userid>0) registeredUsers.push(device.userid);
+					});
+
+					if(registeredUsers.length>0) {
+						html += ' (' + registeredUsers.length + ' <?php _e('registered user(s)', "safari-push"); ?>)' ;
+						html += ' </p><p><a href="<?php echo add_query_arg( 'show_users', true ); ?>"><?php _e('Show registered users', "safari-push"); ?></a>';
+					}
+					html += '</p>';
+				} else {
+					var html = '<p><?php _e('Error retrieving data from push service', "safari-push"); ?></p>';
+				}
+				$("#safari-push-subscribers").html(html);
+			}, "json").fail(function() {
+					var html = '<p><?php _e('Error retrieving data from push service', "safari-push"); ?></p>';
+					$("#safari-push-subscribers").html(html);
+			});
+        });
+        </script><?php
     }
 
     // utility functions
