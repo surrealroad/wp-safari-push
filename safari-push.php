@@ -58,6 +58,7 @@ class SafariPush {
 		add_option("safaripush_actionurlargstag", "urlargs");
 		add_option("safaripush_authtag", "auth");
 		add_option("safaripush_pushtitle",  __( 'New post published', 'safari-push' ));
+		add_option("safaripush_pushbody", '{post-title}');
 		add_option("safaripush_pushlabel",  __( 'View', 'safari-push' ));
 		add_option("safaripush_defaultmsg", '<div class="alert alert-info"><p>' . __( 'To enable push notifications for this site, click "Allow" when Safari asks you.', 'safari-push' ) . '</p></div>');
 		add_option("safaripush_unsupportedmsg", '<div class="alert alert-warning"><p>' . __( 'To enable or modify push notifications for this site, use Safari 7.0 or newer.', 'safari-push' ) . '</p></div>');
@@ -84,6 +85,7 @@ class SafariPush {
 		delete_option('safaripush_actionurlargstag');
 		delete_option('safaripush_authtag');
 		delete_option('safaripush_pushtitle');
+		delete_option('safaripush_pushbody');
 		delete_option('safaripush_pushlabel');
 		delete_option('safaripush_defaultmsg');
 		delete_option('safaripush_unsupportedmsg');
@@ -102,9 +104,11 @@ class SafariPush {
 
 		add_action('wp_enqueue_scripts', array($this, 'enqueuescripts'));
 		add_action('transition_post_status', array($this, 'notifyPost'), 10, 3);
+		add_action( 'post_submitbox_misc_actions', array($this, 'post_page_metabox'));
+		add_action( 'save_post', array($this, 'meta_box_save' ));
 
 		$plugin = plugin_basename(__FILE__);
-		add_filter("plugin_action_links_$plugin", array($this, 'settings_link') );
+		add_filter("plugin_action_links_$plugin", array($this, 'settings_link'));
 	}
 
 	public function admin_init() {
@@ -122,8 +126,9 @@ class SafariPush {
 	    add_settings_field('safaripush-auth-tag', __( 'Web Service Push Authentication Tag', 'safari-push' ), array($this, 'pushAuthTagInput'), 'safaripush', 'safaripush-webservice');
 
 	    add_settings_section('safaripush-notifications', __( 'Notification Settings', 'safari-push' ), array($this, 'initNotificationSettings'), 'safaripush');
-	    add_settings_field('safaripush-notification-title', __( 'Notification Title', 'safari-push' ), array($this, 'notificationTitleInput'), 'safaripush', 'safaripush-notifications');
-	    add_settings_field('safaripush-notification-label', __( 'Notification Button Label', 'safari-push' ), array($this, 'notificationLabelInput'), 'safaripush', 'safaripush-notifications');
+	    add_settings_field('safaripush-notification-title', __( 'Default Notification Title', 'safari-push' ), array($this, 'notificationTitleInput'), 'safaripush', 'safaripush-notifications');
+	    add_settings_field('safaripush-notification-body', __( 'Default Notification Body', 'safari-push' ), array($this, 'notificationBodyInput'), 'safaripush', 'safaripush-notifications');
+	    add_settings_field('safaripush-notification-label', __( 'Default Notification Button Label', 'safari-push' ), array($this, 'notificationLabelInput'), 'safaripush', 'safaripush-notifications');
 
 	    add_settings_section('safaripush-shortcode', __( 'Shortcode Settings', 'safari-push' ), array($this, 'initShortcodeSettings'), 'safaripush');
 	    add_settings_field('safaripush-shortcode-default-msg', __( 'Default message', 'safari-push' ), array($this, 'shortcodeDefaultmsgInput'), 'safaripush', 'safaripush-shortcode');
@@ -134,7 +139,7 @@ class SafariPush {
 
 	    add_settings_section('safaripush-behaviour', __( 'Behaviour Settings', 'safari-push' ), array($this, 'initBehaviourSettings'), 'safaripush');
 	    add_settings_field('safaripush-behaviour-enabledposttypes', __( 'Enabled post types', 'safari-push' ), array($this, 'behaviourEnabledposttypesInput'), 'safaripush', 'safaripush-behaviour');
-	    add_settings_field('safaripush-behaviour-enabledcategories', __( 'Enabled categories', 'safari-push' ), array($this, 'behaviourEnabledcategoriesInput'), 'safaripush', 'safaripush-behaviour');
+	    // add_settings_field('safaripush-behaviour-enabledcategories', __( 'Enabled categories', 'safari-push' ), array($this, 'behaviourEnabledcategoriesInput'), 'safaripush', 'safaripush-behaviour'); // removed because categories are too liquid
 	    add_settings_field('safaripush-behaviour-enqueuefooter', __( 'Load Javascript in footer', 'safari-push' ), array($this, 'behaviourEnqueuefooterInput'), 'safaripush', 'safaripush-behaviour');
     }
 
@@ -151,6 +156,7 @@ class SafariPush {
 	    register_setting('safaripush', 'safaripush_urlargstag');
 	    register_setting('safaripush', 'safaripush_authtag');
 	    register_setting('safaripush', 'safaripush_pushtitle');
+	    register_setting('safaripush', 'safaripush_pushbody');
 	    register_setting('safaripush', 'safaripush_pushlabel');
 	    register_setting('safaripush', 'safaripush_defaultmsg');
 	    register_setting('safaripush', 'safaripush_unsupportedmsg');
@@ -353,7 +359,7 @@ class SafariPush {
 			</tfoot>
 			<tbody>
 			<?php foreach($logs as $log) {
-				echo '<tr><td>'.date('Y-m-d H:i', $log['time']).'</td><td><a href="'.get_permalink($log['postid']).'">'.get_the_title($log['postid']).'</a></td><td>'.$log['response'].'</td></tr>';
+				echo '<tr><td>'.self::safaripush_display_timestamp($log['time']).'</td><td><a href="'.get_permalink($log['postid']).'">'.get_the_title($log['postid']).'</a></td><td>'.$log['response'].'</td></tr>';
 			} ?>
 			</tbody>
         	</table>
@@ -394,12 +400,143 @@ class SafariPush {
         self::printCountJS();
 	}
 
+	// show a metabox on post pages to control sending push notifications
+	function post_page_metabox() {
+		global $post;
+		if (!$this->post_type_is_pushable($post)) return;
+		//elseif (!$this->post_category_is_pushable($post)) return; // removed because categories are too liquid
+		$disabled = '';
+		$willNotifyMsg = __('On', "safaripush");
+		$wontNotifyMsg = __('Off', "safaripush");
+		$msg = '';
+		$editLabel = __( 'Edit', 'safari-push' );
+		$complete = false;
+
+		$meta = $this->get_pushdata_for_post($post->ID);
+		$title = $meta['title'];
+		$body = $meta['body'];
+		$action = $meta['action'];
+		$time = $meta['time'];
+		$response = $meta['response'];
+		$submit = $meta['submit'];
+		$checked = $meta['submit'];
+
+		if($submit && !$time) {
+			$msg = $willNotifyMsg;
+		} elseif($submit && $time) {
+			$complete = true;
+			$msg = __('Sent', "safaripush");
+			if($response) $msg.=' ('.$response.')';
+			$editLabel = __( 'View', "safaripush");
+			$disabled = ' disabled="disabled"';
+		} else {
+			$msg = $wontNotifyMsg;
+		}
+
+		?><div id="safaripush" class="misc-pub-section misc-pub-section-last">
+			<?php _e( 'Safari Push Notification:', 'safari-push' ); ?> <span id="safaripush-status"><strong><?php echo $msg; ?></strong></span>
+			<a href="#" id="safaripush-form-edit"><?php echo $editLabel; ?></a>
+			&nbsp;<a href="<?php echo admin_url('options-general.php?page=safaripush'); ?>" target="_blank"><?php _e( 'Settings', 'safari-push' ); ?></a><br>
+			<div id="safaripush-form" class="hide-if-js">
+				<ul>
+					<?php //check if push notification already sent
+					if($complete) {
+						echo '<li>'.__('Sent: ', "safaripush").self::safaripush_display_timestamp($time).'</li>';
+						echo '<li>'.__('Response: ', "safaripush").$response.'</li>';
+					} else { ?>
+					<li>
+						<label for="safaripush-submit">
+							<input type="checkbox" name="safaripush[submit]" id="safaripush-submit" class="safaripush-submit" value="1" <?php
+								checked( true, $checked );
+								echo $disabled;
+								?>/>
+							<?php _e('Send notification', "safaripush"); ?>
+						</label>
+					</li>
+					<?php } ?>
+				</ul>
+				<label for="safaripush-title"><?php _e('Title:', "safaripush"); ?></label>
+				<input name="safaripush[title]" id="safaripush-title" type="text" value="<?php echo esc_attr($title); ?>"<?php echo $disabled;?>/>
+				<label for="safaripush-body"><?php _e('Body:', "safaripush"); ?></label>
+				<textarea name="safaripush[body]" id="safaripush-body"<?php echo $disabled;?>><?php echo esc_attr($body); ?></textarea>
+				<label for="safaripush-button"><?php _e('Button label:', "safaripush"); ?></label>
+				<input name="safaripush[action]" id="safaripush-action" type="text" value="<?php echo esc_attr($action); ?>"<?php echo $disabled;?>/>
+				<a href="#" class="hide-if-no-js" id="safaripush-form-hide"><?php _e('Hide', "safaripush"); ?></a>
+			</div>
+		</div>
+		<script type="text/javascript">
+		jQuery(function($) {
+			$('#safaripush-form-edit').click( function(e) {
+				e.preventDefault();
+				$('#safaripush-form').slideDown( 'fast', function() {
+					var titleInput = $("#safaripush-title"),
+						bodyInput = $("#safaripush-body"),
+						postTitle = $("#title").val();
+					if(postTitle) {
+						titleInput.val(function(i,v){return v.replace("{post-title}", postTitle)});
+						bodyInput.val(function(i,v){return v.replace("{post-title}", postTitle)});
+					}
+				});
+				$('#safaripush-status').hide();
+				$(this).hide();
+			});
+			$('#safaripush-form-hide').click( function(e) {
+				e.preventDefault();
+				var status = '';
+				if($("#safaripush-submit").is(':checked')) status = '<?php echo $willNotifyMsg; ?>';
+				else if($("#safaripush-submit").is(':not(:checked)')) status = '<?php echo $wontNotifyMsg; ?>';
+				var titleInput = $("#safaripush-title"),
+					bodyInput = $("#safaripush-body"),
+					postTitle = $("#title").val();
+				if(postTitle) {
+					titleInput.val(function(i,v){return v.replace(postTitle, "{post-title}")});
+					bodyInput.val(function(i,v){return v.replace(postTitle, "{post-title}")});
+				}
+				$('#safaripush-form').slideUp( 'fast' , function() {
+				});
+				$('#safaripush-status').show();
+				if(status) $('#safaripush-status').html( '<strong>' + status + '</strong>' );
+				$('#safaripush-form-edit').show();
+			});
+		});
+		</script>
+		<style type="text/css">
+		#safaripush input[type=text], #safaripush textarea {
+			width:100%;
+			margin: 4px 0 0;
+		}
+		#safaripush ul {
+			margin: 4px 0 4px 6px;
+		}
+		#safaripush li {
+			margin: 0;
+		}
+		</style><?php
+	}
+
+	function meta_box_save($post_id) {
+		if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return $post_id;
+
+		if ( isset( $_POST['post_type'] ) && ( 'post' == $_POST['post_type'] || 'page' == $_POST['post_type'] ) ) {
+			if ( current_user_can( 'edit_post', $post_id ) ) {
+				if($_POST['post_title']) {
+					$count = 1;
+					$_POST['safaripush']['title'] = str_replace($_POST['post_title'], "{post-title}", $_POST['safaripush']['title'],$count);
+					$_POST['safaripush']['body'] = str_replace($_POST['post_title'], "{post-title}", $_POST['safaripush']['body'], $count);
+				}
+				// https://trepmal.com/action_hook/post_submitbox_misc_actions/
+				update_post_meta( $post_id, '_safaripush', $_POST['safaripush'], get_post_meta( $post_id, '_safaripush', true ) );
+			}
+		}
+	  	return $post_id;
+	}
+
     function initWebServiceSettings() {
     	_e('<p>To allow visitors to subscribe to your site via Safari Push Notifications, you need a correctly-configured push service.<br/><small>For a PHP-based service that\'s compatibile with this plugin, see <a href="https://github.com/surrealroad/Safari-Push-Notifications">our reference service on GitHub</a>.</small></p>', "safari-push");
     }
 
     function initNotificationSettings() {
-
+		_e('<p>The following settings can be changed individually per post, but you can set the default values here. Use <code>{post-title}</code> to use the WordPress post title in the title or body fields.</p>', "safari-push");
     }
 
     function initShortcodeSettings() {
@@ -446,6 +583,9 @@ class SafariPush {
     function notificationTitleInput(){
     	self::text_input('safaripush_pushtitle', __( 'Title for notifications displayed, e.g. New Post', 'safari-push' ) );
     }
+    function notificationBodyInput(){
+    	self::text_input('safaripush_pushbody', __( 'Body for notifications displayed, e.g. {post-title}', 'safari-push' ) );
+    }
     function notificationLabelInput(){
     	self::text_input('safaripush_pushlabel', __( 'Button label for notifications displayed, e.g. View', 'safari-push' ) );
     }
@@ -465,10 +605,10 @@ class SafariPush {
     	self::text_area('safaripush_deniedmsg', __('HTML to display in Shortcode when notifications have been denied', 'safari-push') );
     }
     function behaviourEnabledposttypesInput(){
-    	self::checkbox_group(self::valid_post_type_array(), 'safaripush_enabledposttypes', __('Notify subscribers whenever the checked post types are published for the first time', 'safari-push') );
+    	self::checkbox_group(self::valid_post_type_array(), 'safaripush_enabledposttypes', __('Enable push notifications for the checked post types only', 'safari-push') );
     }
     function behaviourEnabledcategoriesInput(){
-    	self::checkbox_group(self::valid_category_array(), 'safaripush_enabledcategories', __('Only notify subscribers for content in the checked categories (posts without categories are always included)', 'safari-push') );
+    	self::checkbox_group(self::valid_category_array(), 'safaripush_enabledcategories', __('Enable push notifications for content in the checked categories only (posts without categories are always enabled)', 'safari-push') );
     }
     function behaviourEnqueuefooterInput(){
     	self::checkbox_input('safaripush_enqueuefooter', __('Load Javascript in footer (requires <code>wp_footer()</code> in your theme)', 'safari-push') );
@@ -491,29 +631,24 @@ class SafariPush {
 			false,
 			$context);
 		self::addLog($post_id, $response);
+		// bake submitted parameters
+    	if($post_id) update_post_meta( $post_id, '_safaripush', array("title" => $title, "body" => $body, "action" => $action, "submit" => 1), get_post_meta( $post_id, '_safaripush', true ) );
 		do_action('safaripush_post_notification', $post_id, $response);
     }
 
     function notifyPost($newStatus, $oldStatus, $post) {
-    	// only notify new of allowed post types
-    	$post_types = array();
-    	foreach(get_option('safaripush_enabledposttypes') as $key=>$value) {
-	    	if($value) $post_types[] = $key;
-    	}
-    	$categories = array();
-    	foreach(get_option('safaripush_enabledcategories') as $key=>$value) {
-	    	if($value) $categories[] = $key;
-    	}
+    	// only notify new posts
     	if( 'publish' != $newStatus) return;
     	elseif( 'publish' === $oldStatus) return;
-    	elseif(!in_array(get_post_type($post), $post_types)) return;
-    	elseif(count(wp_get_post_categories($post->ID)) && !in_category($categories, $post)) return;
-    	$serviceURL = get_option('safaripush_webserviceurl');
-    	$endpoint = get_option('safaripush_pushendpoint');
-    	$auth = get_option('safaripush_authcode');
-    	$title = get_option('safaripush_pushtitle');
-    	$body = $post->post_title;
-    	$action = get_option('safaripush_pushlabel');;
+    	// only notify if notification enabled for post
+    	$meta = $this->get_pushdata_for_post($post->ID);
+    	$submit = $meta['submit'];
+    	if(isset($submit) && !$submit) return;
+		$title = $meta['title'];
+		$body = $meta['body'];
+		$action = $meta['action'];
+    	$title = str_replace("{post-title}", $post->post_title, $title);
+    	$body = str_replace("{post-title}", $post->post_title, $body);
     	$url = parse_url( home_url('?p=' . $post->ID ) );
     	$urlargs = ltrim($url["path"],'/');
     	if(isset($url["query"])) $urlargs.="?".$url["query"];
@@ -522,7 +657,21 @@ class SafariPush {
     	$actionTag = get_option('safaripush_actiontag');
     	$urlargsTag = get_option('safaripush_urlargstag');
     	$authTag = get_option('safaripush_authtag');
-	    self::newPushNotification($serviceURL, $endpoint, $title, $body, $action, $urlargs, $auth, $titleTag, $bodyTag, $actionTag, $urlargsTag, $authTag, $post->ID);
+    	$serviceURL = get_option('safaripush_webserviceurl');
+    	$endpoint = get_option('safaripush_pushendpoint');
+    	$auth = get_option('safaripush_authcode');
+    	self::newPushNotification($serviceURL, $endpoint, $title, $body, $action, $urlargs, $auth, $titleTag, $bodyTag, $actionTag, $urlargsTag, $authTag, $post->ID);
+    }
+
+    function get_pushdata_for_post($post_id) { // get relevant data for the specified post
+	    $meta = get_post_meta( $post_id, "_safaripush", true );
+	    if (!$title = $meta['title']) $title = get_option('safaripush_pushtitle');
+    	if (!$body = $meta['body']) $body = get_option('safaripush_pushbody');
+    	if (!$action = $meta['action']) $action = get_option('safaripush_pushlabel');
+    	if (!$submit = $meta['submit']) $submit = 1; // enable push by default
+    	$time = get_post_meta( $post_id, 'safaripush_time', true );
+    	$response = get_post_meta( $post_id, 'safaripush_response', true );
+    	return array("title" => $title, "body" => $body, "action" => $action, "submit" => $submit, "time" => $time, "response" => $response);
     }
 
     // logging
@@ -647,6 +796,14 @@ class SafariPush {
 		return $arr;
 	}
 
+	function post_type_is_pushable($post) {
+		$post_types = array();
+    	foreach(get_option('safaripush_enabledposttypes') as $key=>$value) {
+	    	if($value) $post_types[] = $key;
+    	}
+    	return in_array(get_post_type($post), $post_types);
+    }
+
 	private function valid_category_array($defaults = false) {
 		$arr = array();
 		$categories = get_categories( array('hide_empty' => 0), "objects");
@@ -655,6 +812,22 @@ class SafariPush {
 			else $arr[] = array("name" => $category->slug, "label" => $category->name);
 		}
 		return $arr;
+	}
+
+	function post_category_is_pushable($post) {
+		$categories = array();
+    	foreach(get_option('safaripush_enabledcategories') as $key=>$value) {
+	    	if($value) $categories[] = $key;
+    	}
+    	return (count(wp_get_post_categories($post->ID))==0 || in_category($categories, $post));
+    }
+
+    public function safaripush_display_timestamp($date) {
+		if(get_option('date_format')) $d = date(get_option('date_format'), $date);
+		else $d = date('Y-m-d', $date);
+		if(get_option('time_format')) $t = date(get_option('time_format'), $date);
+		else $t = date('H:i', $date);
+		return $d." ".$t;
 	}
 
 	function surrealTagline() {

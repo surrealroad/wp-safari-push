@@ -1,7 +1,7 @@
 === Safari Push ===
 Tags: safari, push notifications, mac, os x, mavericks
 Stable tag: 0.9.1
-Tested up to: 3.8.1
+Tested up to: 3.9.1
 
 A Safari Push Plugin for Wordpress
 
@@ -92,7 +92,10 @@ Not right now, maybe never. Depends if this is something that a lot of people wo
 
 == Changelog ==
 = 0.x =
+* Notification settings can be configured for each post when publishing the post
 * Corrected date displayed in notification logs
+* Dates and times are displayed in accordance with Wordpress settings where possible
+* Removed the option to restrict push notifications per category, as this can be controlled with more granularity at the post level now
 * Added a dashboard widget that displays the current number of push subscribers
 * Added some missing localisation strings
 * Fixed the settings link from the plugins page
