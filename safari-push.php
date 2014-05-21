@@ -40,6 +40,7 @@ class SafariPush {
 		add_action('admin_init', array($this, 'admin_init'));
 		add_action('admin_init', array($this,'registerSettings'));
 		add_action('admin_menu', array($this,'pluginSettings'));
+		add_action('wp_dashboard_setup', array($this, 'dashboardWidgets'));
 	}
 
 	static function install(){
@@ -206,7 +207,7 @@ class SafariPush {
 
 	// add settings link
 	static function settings_link($links) {
-		$settings_link = '<a href="options-general.php?page=onebox">Settings</a>';
+		$settings_link = '<a href="options-general.php?page=safaripush">'.__('Settings', "safaripush").'</a>';
 		array_unshift($links, $settings_link);
 		return $links;
 	}
@@ -214,11 +215,11 @@ class SafariPush {
 	// add admin options page
 
 	function pluginSettings() {
-	    add_options_page( 'Safari Push Notifications', 'Safari Push', 'manage_options', 'safaripush', array ( $this, 'optionsPage' ));
+	    add_options_page( __('Safari Push Notifications', "safaripush"), __('Safari Push', "safaripush"), 'manage_options', 'safaripush', array ( $this, 'optionsPage' ));
 	}
 	function optionsPage() {
 		if ( !current_user_can( 'manage_options' ) )  {
-			wp_die( __( 'You do not have sufficient permissions to access this page.', "safari-push" ) );
+			wp_die( __( 'You do not have sufficient permissions to access this page.', "safaripush" ) );
 		}
 		?>
     <div class="wrap">
@@ -381,6 +382,16 @@ class SafariPush {
         <p><?php _e( 'Plugin version', 'safari-push' ) ?> <?php echo self::$version; ?></p>
     </div>
     <?php
+	}
+
+
+	function dashboardWidgets() {
+		wp_add_dashboard_widget("safaripush_dashboard_widget", __('Safari Push Subscribers', "safaripush"), array($this, "dashboardSubscribers" ));
+	}
+
+	function dashboardSubscribers() {
+		echo '<div id="safari-push-subscribers">'.__( 'Retrieving information', 'safari-push' ).'&hellip;</div>';
+        self::printCountJS();
 	}
 
     function initWebServiceSettings() {
@@ -559,7 +570,7 @@ class SafariPush {
 
 					if(registeredUsers.length>0) {
 						html += ' (' + registeredUsers.length + ' <?php _e('registered user(s)', "safari-push"); ?>)' ;
-						html += ' </p><p><a href="<?php echo add_query_arg( 'show_users', true ); ?>"><?php _e('Show registered users', "safari-push"); ?></a>';
+						html += ' </p><p><a href="<?php echo add_query_arg( 'show_users', true, "options-general.php?page=safaripush" ); ?>"><?php _e('Show registered users', "safari-push"); ?></a>';
 					}
 					html += '</p>';
 				} else {

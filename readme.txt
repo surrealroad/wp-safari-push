@@ -93,6 +93,9 @@ Not right now, maybe never. Depends if this is something that a lot of people wo
 == Changelog ==
 = 0.x =
 * Corrected date displayed in notification logs
+* Added a dashboard widget that displays the current number of push subscribers
+* Added some missing localisation strings
+* Fixed the settings link from the plugins page
 
 = 0.9.1 =
 * Sending a manual push now includes the server response in the result
