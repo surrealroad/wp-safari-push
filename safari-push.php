@@ -672,6 +672,7 @@ class SafariPush {
     	if (!$submit = $meta['submit']) $submit = 1; // enable push by default
     	$time = get_post_meta( $post_id, 'safaripush_time', true );
     	$response = get_post_meta( $post_id, 'safaripush_response', true );
+    	// might want to use wp_parse_args here to enforce defaults
     	return array("title" => $title, "body" => $body, "action" => $action, "submit" => $submit, "time" => $time, "response" => $response);
     }
 
