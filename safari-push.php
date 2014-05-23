@@ -640,7 +640,7 @@ class SafariPush {
     	// only notify new posts
     	if( 'publish' != $newStatus) return;
     	elseif( 'publish' === $oldStatus) return;
-    	elseif(!post_type_is_pushable($post)) return;
+    	elseif(!self::post_type_is_pushable($post)) return;
     	// only notify if notification enabled for post
     	$meta = $this->get_pushdata_for_post($post->ID);
     	$submit = $meta['submit'];
