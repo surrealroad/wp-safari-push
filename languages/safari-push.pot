@@ -1,0 +1,477 @@
+# Copyright (C) 2014 Safari Push Notifications
+# This file is distributed under the same license as the Safari Push Notifications package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Safari Push Notifications 1.0\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/safari-push\n"
+"POT-Creation-Date: 2014-06-25 11:35:41+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2014-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: safari-push.php:60
+msgid "New post published"
+msgstr ""
+
+#: safari-push.php:62 safari-push.php:430
+msgid "View"
+msgstr ""
+
+#: safari-push.php:63
+msgid ""
+"To enable push notifications for this site, click \"Allow\" when Safari asks "
+"you."
+msgstr ""
+
+#: safari-push.php:64
+msgid ""
+"To enable or modify push notifications for this site, use Safari 7.0 or "
+"newer."
+msgstr ""
+
+#: safari-push.php:65
+msgid ""
+"Something went wrong communicating with the push notification server, please "
+"try again later."
+msgstr ""
+
+#: safari-push.php:66
+msgid "Push notifications are enabled for this site."
+msgstr ""
+
+#: safari-push.php:67
+msgid ""
+"You have opted not to receive push notifications from us. If you changed "
+"your mind, open Safari's preferences, and change the permission in the "
+"notifications tab."
+msgstr ""
+
+#: safari-push.php:115
+msgid "Web Service Settings"
+msgstr ""
+
+#: safari-push.php:116
+msgid "Web Service URL"
+msgstr ""
+
+#: safari-push.php:117
+msgid "Website Push ID"
+msgstr ""
+
+#: safari-push.php:118
+msgid "Web Service Push Endpoint"
+msgstr ""
+
+#: safari-push.php:119
+msgid "Web Service List Endpoint"
+msgstr ""
+
+#: safari-push.php:120
+msgid "Web Service Count Endpoint"
+msgstr ""
+
+#: safari-push.php:121
+msgid "Web Service Authentication Code"
+msgstr ""
+
+#: safari-push.php:122
+msgid "Web Service Push Title Tag"
+msgstr ""
+
+#: safari-push.php:123
+msgid "Web Service Push Body Tag"
+msgstr ""
+
+#: safari-push.php:124
+msgid "Web Service Push Action Tag"
+msgstr ""
+
+#: safari-push.php:125
+msgid "Web Service Push URL Arguments Tag"
+msgstr ""
+
+#: safari-push.php:126
+msgid "Web Service Push Authentication Tag"
+msgstr ""
+
+#: safari-push.php:128
+msgid "Notification Settings"
+msgstr ""
+
+#: safari-push.php:129
+msgid "Default Notification Title"
+msgstr ""
+
+#: safari-push.php:130
+msgid "Default Notification Body"
+msgstr ""
+
+#: safari-push.php:131
+msgid "Default Notification Button Label"
+msgstr ""
+
+#: safari-push.php:133
+msgid "Shortcode Settings"
+msgstr ""
+
+#: safari-push.php:134
+msgid "Default message"
+msgstr ""
+
+#: safari-push.php:135
+msgid "Unsupported system message"
+msgstr ""
+
+#: safari-push.php:136
+msgid "Error message"
+msgstr ""
+
+#: safari-push.php:137
+msgid "Permission granted message"
+msgstr ""
+
+#: safari-push.php:138
+msgid "Permission denied message"
+msgstr ""
+
+#: safari-push.php:140
+msgid "Behaviour Settings"
+msgstr ""
+
+#: safari-push.php:141
+msgid "Enabled post types"
+msgstr ""
+
+#: safari-push.php:143
+msgid "Load Javascript in footer"
+msgstr ""
+
+#: safari-push.php:216 safari-push.php:439
+msgid "Settings"
+msgstr ""
+
+#. #-#-#-#-#  plugin.pot (Safari Push Notifications 1.0)  #-#-#-#-#
+#. Plugin Name of the plugin/theme
+#: safari-push.php:224
+msgid "Safari Push Notifications"
+msgstr ""
+
+#: safari-push.php:224
+msgid "Safari Push"
+msgstr ""
+
+#: safari-push.php:228
+msgid "You do not have sufficient permissions to access this page."
+msgstr ""
+
+#: safari-push.php:233
+msgid "Safari Push Notification Options"
+msgstr ""
+
+#: safari-push.php:239
+msgid "Send a push notification"
+msgstr ""
+
+#: safari-push.php:241
+msgid "Use the form below to send a notification"
+msgstr ""
+
+#: safari-push.php:243
+msgid "Notification Title"
+msgstr ""
+
+#: safari-push.php:246
+msgid "Notification Body"
+msgstr ""
+
+#: safari-push.php:249
+msgid "Device token"
+msgstr ""
+
+#: safari-push.php:250
+msgid ""
+"Specify the device token to send the notification to, or leave blank to "
+"notify all devices (defaults to your current device if available)."
+msgstr ""
+
+#: safari-push.php:288
+msgid "A required field is not filled in"
+msgstr ""
+
+#: safari-push.php:292
+msgid "Notification sent"
+msgstr ""
+
+#: safari-push.php:294
+msgid "Error communicating with push service"
+msgstr ""
+
+#: safari-push.php:300
+msgid "Push Subscribers"
+msgstr ""
+
+#: safari-push.php:305 safari-push.php:311
+msgid "Username"
+msgstr ""
+
+#: safari-push.php:306 safari-push.php:312
+msgid "Device Token"
+msgstr ""
+
+#: safari-push.php:331
+msgid "There are "
+msgstr ""
+
+#: safari-push.php:331
+msgid " additional subscribed devices belonging to unregistered users"
+msgstr ""
+
+#: safari-push.php:333 safari-push.php:399
+msgid "Retrieving information"
+msgstr ""
+
+#: safari-push.php:336
+msgid ""
+"To display this number somewhere, use the shortcode <code>[safari-push-count]"
+"</code>"
+msgstr ""
+
+#: safari-push.php:341
+msgid "Notification Logs"
+msgstr ""
+
+#: safari-push.php:348 safari-push.php:355
+msgid "Date"
+msgstr ""
+
+#: safari-push.php:349 safari-push.php:356
+msgid "Post"
+msgstr ""
+
+#: safari-push.php:350 safari-push.php:357
+msgid "Response"
+msgstr ""
+
+#: safari-push.php:375
+msgid "&laquo;"
+msgstr ""
+
+#: safari-push.php:376
+msgid "&raquo;"
+msgstr ""
+
+#: safari-push.php:386
+msgid "More information on Safari Push Notifications"
+msgstr ""
+
+#: safari-push.php:387
+msgid "Safari Push Notification Plugin for Wordpress by"
+msgstr ""
+
+#: safari-push.php:388
+msgid "Plugin version"
+msgstr ""
+
+#: safari-push.php:395
+msgid "Safari Push Subscribers"
+msgstr ""
+
+#: safari-push.php:409
+msgid "On"
+msgstr ""
+
+#: safari-push.php:410
+msgid "Off"
+msgstr ""
+
+#: safari-push.php:412
+msgid "Edit"
+msgstr ""
+
+#: safari-push.php:428
+msgid "Sent"
+msgstr ""
+
+#: safari-push.php:437
+msgid "Safari Push Notification:"
+msgstr ""
+
+#: safari-push.php:444
+msgid "Sent: "
+msgstr ""
+
+#: safari-push.php:445
+msgid "Response: "
+msgstr ""
+
+#: safari-push.php:453
+msgid "Send notification"
+msgstr ""
+
+#: safari-push.php:458
+msgid "Title:"
+msgstr ""
+
+#: safari-push.php:460
+msgid "Body:"
+msgstr ""
+
+#: safari-push.php:462
+msgid "Button label:"
+msgstr ""
+
+#: safari-push.php:464
+msgid "Hide"
+msgstr ""
+
+#: safari-push.php:535
+msgid ""
+"<p>To allow visitors to subscribe to your site via Safari Push "
+"Notifications, you need a correctly-configured push service.<br/><small>For "
+"a PHP-based service that's compatibile with this plugin, see <a href="
+"\"https://github.com/surrealroad/Safari-Push-Notifications\">our reference "
+"service on GitHub</a>.</small></p>"
+msgstr ""
+
+#: safari-push.php:539
+msgid ""
+"<p>The following settings can be changed individually per post, but you can "
+"set the default values here. Use <code>{post-title}</code> to use the "
+"WordPress post title in the title or body fields.</p>"
+msgstr ""
+
+#: safari-push.php:543
+msgid ""
+"<p>To display feedback to visitors about their push notification status, use "
+"the shortcode <code>[safari-push]</code> in combination with the templates "
+"below, wherever you'd like the message to appear.</p>"
+msgstr ""
+
+#: safari-push.php:551
+msgid "Base URL to your push web service, e.g. https://mypushservice.com"
+msgstr ""
+
+#: safari-push.php:554
+msgid "Unique identifier for your Website Push ID, e.g. web.com.mysite"
+msgstr ""
+
+#: safari-push.php:557
+msgid ""
+"Endpoint for your web service to receive new notifications, e.g. /v1/push"
+msgstr ""
+
+#: safari-push.php:560
+msgid "Endpoint for your web service to list registered devices, e.g. /v1/list"
+msgstr ""
+
+#: safari-push.php:563
+msgid ""
+"Endpoint for your web service to count registered devices, e.g. /v1/count"
+msgstr ""
+
+#: safari-push.php:566
+msgid "Authentication code for your web service"
+msgstr ""
+
+#: safari-push.php:569
+msgid "Endpoint tag for push notification title, e.g. title"
+msgstr ""
+
+#: safari-push.php:572
+msgid "Endpoint tag for push notification body, e.g. body"
+msgstr ""
+
+#: safari-push.php:575
+msgid "Endpoint tag for push notification action button label, e.g. button"
+msgstr ""
+
+#: safari-push.php:578
+msgid "Endpoint tag for push notification URL arguments, e.g. urlargs"
+msgstr ""
+
+#: safari-push.php:581
+msgid "Endpoint tag for push notification authentication, e.g. auth"
+msgstr ""
+
+#: safari-push.php:584
+msgid "Title for notifications displayed, e.g. New Post"
+msgstr ""
+
+#: safari-push.php:587
+msgid "Body for notifications displayed, e.g. {post-title}"
+msgstr ""
+
+#: safari-push.php:590
+msgid "Button label for notifications displayed, e.g. View"
+msgstr ""
+
+#: safari-push.php:593
+msgid "Default HTML to display in Shortcode"
+msgstr ""
+
+#: safari-push.php:596
+msgid "HTML to display in Shortcode on unsupported systems"
+msgstr ""
+
+#: safari-push.php:599
+msgid "HTML to display in Shortcode in case of error"
+msgstr ""
+
+#: safari-push.php:602
+msgid "HTML to display in Shortcode when notifications have been granted"
+msgstr ""
+
+#: safari-push.php:605
+msgid "HTML to display in Shortcode when notifications have been denied"
+msgstr ""
+
+#: safari-push.php:608
+msgid "Enable push notifications for the checked post types only"
+msgstr ""
+
+#: safari-push.php:611
+msgid ""
+"Enable push notifications for content in the checked categories only (posts "
+"without categories are always enabled)"
+msgstr ""
+
+#: safari-push.php:614
+msgid ""
+"Load Javascript in footer (requires <code>wp_footer()</code> in your theme)"
+msgstr ""
+
+#: safari-push.php:715
+msgid "devices subscribed via push"
+msgstr ""
+
+#: safari-push.php:723
+msgid "registered user(s)"
+msgstr ""
+
+#: safari-push.php:724
+msgid "Show registered users"
+msgstr ""
+
+#: safari-push.php:728 safari-push.php:732
+msgid "Error retrieving data from push service"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "https://github.com/surrealroad/wp-safari-push"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Allows WordPress to publish updates to a push server for Safari browsers"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Surreal Road Limited"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://www.surrealroad.com"
+msgstr ""
