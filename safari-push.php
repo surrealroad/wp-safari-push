@@ -55,7 +55,7 @@ class SafariPush {
 		add_option("safaripush_titletag", "title");
 		add_option("safaripush_bodytag", "body");
 		add_option("safaripush_actiontag", "button");
-		add_option("safaripush_actionurlargstag", "urlargs");
+		add_option("safaripush_urlargstag", "urlargs");
 		add_option("safaripush_authtag", "auth");
 		add_option("safaripush_pushtitle",  __( 'New post published', 'safari-push' ));
 		add_option("safaripush_pushbody", '{post-title}');
@@ -82,7 +82,7 @@ class SafariPush {
 		delete_option('safaripush_titletag');
 		delete_option('safaripush_bodytag');
 		delete_option('safaripush_actiontag');
-		delete_option('safaripush_actionurlargstag');
+		delete_option('safaripush_urlargstag');
 		delete_option('safaripush_authtag');
 		delete_option('safaripush_pushtitle');
 		delete_option('safaripush_pushbody');
