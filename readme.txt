@@ -91,6 +91,9 @@ There's `safaripush_post_notification` and `safaripush_post_notification` which 
 Not right now, maybe never. Depends if this is something that a lot of people would want.
 
 == Changelog ==
+= 1.x =
+* Web Service URL arguments tag setting did not have a default value
+
 = 1.0 =
 * Notification settings can be configured for each post when publishing the post
 * Corrected date displayed in notification logs
